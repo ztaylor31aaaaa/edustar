@@ -3,162 +3,96 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Start My Education</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Northstar Learning</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-
     <nav class="navbar">
         <a href="/" class="brand">
-            <span class="brand-icon">🎓</span>
-            Start My Education
+            <span class="brand-mark">N</span>
+            <span>Northstar <span class="brand-light">Learning</span></span>
         </a>
-
         <div class="nav-links">
             <a href="/">Home</a>
+            <a href="#resources">Resources</a>
             <a href="#about">About</a>
-            <a href="#activities">Learning</a>
-            <a href="#contact">Contact</a>
         </div>
     </nav>
 
-    <main id="home-page">
+    <main>
         <section class="hero">
-            <h1>Explain Your Work Clearly.</h1>
-            <p>
-                Digital learning activities and interactive educational
-                resources for curious learners.
-            </p>
-            <button class="hero-button" id="start-button">
-                Start Learning
-            </button>
+            <div class="hero-inner">
+                <span class="eyebrow">LEARNING & DEVELOPMENT</span>
+                <h1>Make room for<br>new ideas.</h1>
+                <p>
+                    A collection of interactive resources designed
+                    to support independent learning and exploration.
+                </p>
+                <a class="primary-button" href="#resources">
+                    Explore resources <span aria-hidden="true">→</span>
+                </a>
+            </div>
         </section>
 
-        <section class="activities" id="activities">
-            <h2>Explore Our Learning Activities</h2>
-            <p class="section-description">
-                Select an activity to continue learning.
-            </p>
+        <section class="resources section" id="resources">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">THE RESOURCE LIBRARY</span>
+                    <h2>Explore and practise</h2>
+                </div>
+                <p>Select a resource to continue.</p>
+            </div>
 
-            <div class="card-grid">
-                <article class="card">
-                    <h3>Interactive Activity One</h3>
-                    <p>
-                        Explore an interactive activity designed to
-                        help develop your problem-solving skills.
-                    </p>
-                    <button class="read-button" data-game="game1">
-                        Read the lesson
-                    </button>
+            <div class="resource-grid">
+                <article class="resource-card">
+                    <div class="card-number">01</div>
+                    <div class="card-content">
+                        <span class="card-label">INTERACTIVE</span>
+                        <h3>Learning Activity One</h3>
+                        <p>
+                            Explore an interactive experience
+                            and practise your skills.
+                        </p>
+                        <a class="resource-link" href="/signin.html?game=game1">
+                            Open resource <span>→</span>
+                        </a>
+                    </div>
                 </article>
 
-                <article class="card">
-                    <h3>Interactive Activity Two</h3>
-                    <p>
-                        Practise your skills through another interactive
-                        learning experience.
-                    </p>
-                    <button class="read-button" data-game="game2">
-                        Read the lesson
-                    </button>
-                </article>
-
-                <article class="card">
-                    <h3>Context</h3>
-                    <p>
-                        Understand the background, goals and requirements
-                        behind a project.
-                    </p>
-                    <button class="read-button" data-game="game1">
-                        Read the lesson
-                    </button>
-                </article>
-
-                <article class="card">
-                    <h3>Decisions</h3>
-                    <p>
-                        Learn how different choices can affect a
-                        project's results.
-                    </p>
-                    <button class="read-button" data-game="game2">
-                        Read the lesson
-                    </button>
-                </article>
-
-                <article class="card">
-                    <h3>Reflection</h3>
-                    <p>
-                        Review what you have learned and explore
-                        opportunities to improve.
-                    </p>
-                    <button class="read-button" data-game="game1">
-                        Read the lesson
-                    </button>
+                <article class="resource-card">
+                    <div class="card-number">02</div>
+                    <div class="card-content">
+                        <span class="card-label">INTERACTIVE</span>
+                        <h3>Learning Activity Two</h3>
+                        <p>
+                            Discover another activity and
+                            put your problem-solving skills to use.
+                        </p>
+                        <a class="resource-link" href="/signin.html?game=game2">
+                            Open resource <span>→</span>
+                        </a>
+                    </div>
                 </article>
             </div>
         </section>
 
-        <section class="info-section" id="about">
-            <h2>About Our Learning Resources</h2>
+        <section class="about-section" id="about">
+            <div>
+                <span class="eyebrow">OUR APPROACH</span>
+                <h2>Learning at your own pace.</h2>
+            </div>
             <p>
-                We provide simple, interactive resources to support
-                learning, creativity and problem-solving.
+                Northstar Learning brings useful resources together
+                in one simple place, with a focus on exploration,
+                practice and independent learning.
             </p>
         </section>
-
-        <footer id="contact">
-            <p>Start My Education &copy; 2026</p>
-            <p>Learning through exploration.</p>
-        </footer>
     </main>
 
-    <!-- Password popup -->
-    <div class="modal hidden" id="password-modal">
-        <div class="modal-content">
-            <button class="close-button" id="close-modal"
-                    aria-label="Close">&times;</button>
-
-            <h2>Continue to Activity</h2>
-            <p>Enter the access password to continue.</p>
-
-            <form id="password-form">
-                <label for="password-input">Password</label>
-                <input
-                    type="password"
-                    id="password-input"
-                    placeholder="Enter password"
-                    autocomplete="off"
-                    required
-                >
-
-                <p id="password-error" class="error-message"
-                   aria-live="polite"></p>
-
-                <button type="submit" class="read-button">
-                    Continue
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Game display -->
-    <section id="game-page" class="game-page hidden">
-        <header class="game-header">
-            <button id="back-button" class="back-button">
-                &larr; Back to Learning
-            </button>
-            <span id="game-title">Learning Activity</span>
-        </header>
-
-        <iframe
-            id="game-frame"
-            title="Interactive learning activity"
-            src="about:blank"
-            allowfullscreen
-        ></iframe>
-    </section>
-
-    <script src="/script.js"></script>
+    <footer>
+        <a href="/" class="footer-brand">Northstar Learning</a>
+        <span>Independent learning resources · 2026</span>
+    </footer>
 </body>
 </html>
