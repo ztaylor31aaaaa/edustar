@@ -1,0 +1,343 @@
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #202124;
+    background: #ffffff;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.navbar {
+    min-height: 64px;
+    background: #0878c9;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 32px;
+    gap: 24px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    background: #0869b5;
+    border: 2px solid white;
+    border-radius: 50%;
+    font-size: 17px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+.hero {
+    background: #0788e8;
+    color: white;
+    min-height: 360px;
+    padding: 85px 24px 75px;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: clamp(30px, 4vw, 42px);
+    margin: 20px 0;
+}
+
+.hero p {
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto 34px;
+}
+
+.hero-button {
+    background: white;
+    color: #0878c9;
+    border: none;
+    border-radius: 6px;
+    padding: 14px 26px;
+    transition: background 0.2s;
+}
+
+.hero-button:hover {
+    background: #eaf4ff;
+}
+
+.activities {
+    padding: 48px 32px;
+    max-width: 1250px;
+    margin: auto;
+}
+
+.activities h2,
+.info-section h2 {
+    text-align: center;
+    color: #0878c9;
+    font-size: 28px;
+    margin: 16px 0;
+}
+
+.section-description {
+    text-align: center;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #f3f8ff;
+    border: 1px solid #cbdff7;
+    border-radius: 10px;
+    padding: 28px 18px 22px;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.card h3 {
+    color: #0065b3;
+    font-size: 18px;
+    margin: 12px 0 16px;
+}
+
+.card p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 22px;
+}
+
+.read-button {
+    background: #0878c9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 11px 17px;
+    font-size: 14px;
+    margin-top: auto;
+}
+
+.read-button:hover {
+    background: #005da5;
+}
+
+.info-section {
+    background: #f6f9fc;
+    padding: 42px 24px;
+    text-align: center;
+}
+
+.info-section p {
+    max-width: 650px;
+    margin: 16px auto;
+    line-height: 1.6;
+}
+
+footer {
+    background: #076bb3;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 13px;
+}
+
+footer p {
+    margin: 7px;
+}
+
+/* Password popup */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 390px;
+    padding: 32px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+    color: #0878c9;
+    margin-top: 0;
+}
+
+.modal-content > p {
+    color: #555;
+    line-height: 1.5;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 27px;
+}
+
+.modal-content label {
+    display: block;
+    margin: 22px 0 8px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline-color: #0878c9;
+    margin-bottom: 14px;
+}
+
+.modal-content .read-button {
+    width: 100%;
+    padding: 13px;
+}
+
+.error-message {
+    color: #c62828;
+    font-size: 13px;
+    min-height: 18px;
+}
+
+/* Game view */
+
+.game-page {
+    min-height: 100vh;
+    background: #f5f7fa;
+}
+
+.game-header {
+    min-height: 58px;
+    background: #0878c9;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 20px;
+}
+
+.back-button {
+    border: 1px solid white;
+    border-radius: 5px;
+    color: white;
+    background: transparent;
+    padding: 9px 12px;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+#game-title {
+    font-weight: bold;
+}
+
+#game-frame {
+    display: block;
+    width: 100%;
+    height: calc(100vh - 58px);
+    border: none;
+    background: white;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media (max-width: 1000px) {
+    .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .navbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .nav-links {
+        gap: 16px;
+    }
+}
+
+@media (max-width: 550px) {
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .activities {
+        padding: 30px 18px;
+    }
+
+    .hero {
+        padding: 60px 20px;
+    }
+
+    .nav-links {
+        gap: 12px;
+    }
+}
