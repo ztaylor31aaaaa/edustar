@@ -2,67 +2,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Resource Access | Northstar Learning</title>
-    <link rel="stylesheet" href="/style.css">
-    <script src="/script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Access Portal — Edustar</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/script.js" defer></script>
 </head>
-<body class="signin-body">
-    <nav class="navbar">
-        <a href="/" class="brand">
-            <span class="brand-mark">N</span>
-            <span>Northstar <span class="brand-light">Learning</span></span>
-        </a>
-        <a class="back-link" href="/">Back to resources</a>
-    </nav>
+<body class="access-page">
+  <header class="nav">
+    <a class="brand" href="/">edustar<span>.</span></a>
+    <a class="back-link" href="/">← Home</a>
+  </header>
 
-    <main class="signin-layout">
-        <section class="signin-info">
-            <span class="eyebrow">RESOURCE LIBRARY</span>
-            <h1>Your next<br>step starts here.</h1>
-            <p>
-                Enter your access password to continue to the
-                selected interactive resource.
-            </p>
-            <div class="access-note">
-                <span class="status-dot"></span>
-                Resource access
-            </div>
-        </section>
+  <main class="access-layout">
+    <section class="access-card">
+      <div class="access-mark">E</div>
+      <p class="eyebrow">EDUSTAR RESOURCE ACCESS</p>
+      <h1>Welcome back.</h1>
+      <p class="muted">Enter your access code to open the interactive game portal.</p>
 
-        <section class="signin-card">
-            <span class="eyebrow">ACCOUNT ACCESS</span>
-            <h2 id="resource-name">Learning Activity</h2>
-            <p class="signin-description">
-                Enter the password to continue.
-            </p>
+      <form id="access-form">
+        <label for="access-code">Access code</label>
+        <input
+          id="access-code"
+          type="password"
+          placeholder="Enter access code"
+          autocomplete="off"
+          required
+        >
+        <p id="access-error" class="error" role="alert" hidden>
+          That code wasn't recognised. Try again.
+        </p>
+        <button class="button button-full" type="submit">Continue <span>→</span></button>
+      </form>
 
-            <form id="password-form">
-                <label for="password-input">Access password</label>
-                <input
-                    id="password-input"
-                    type="password"
-                    placeholder="Enter your password"
-                    autocomplete="current-password"
-                    required
-                >
-                <p id="password-error" class="error-message"
-                   role="alert"></p>
-                <button class="primary-button signin-button" type="submit">
-                    Continue to resource <span>→</span>
-                </button>
-            </form>
-
-            <p class="signin-footer">
-                <a href="/">Return to the resource library</a>
-            </p>
-        </section>
-    </main>
-
-    <footer>
-        <a href="/" class="footer-brand">Northstar Learning</a>
-        <span>Independent learning resources · 2026</span>
-    </footer>
+      <p class="fine-print">EDUSTAR · INTERACTIVE RESOURCE PORTAL</p>
+    </section>
+  </main>
 </body>
 </html>
