@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const requestedGame = params.get("game") || "game1";
 
       if (!GAME_PATHS[requestedGame]) {
-        location.href = "/play.html";
+        location.href = "/play/";
         return;
       }
 
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (frame) {
     if (!hasAccess()) {
-      location.replace("/signin.html");
+      location.replace("/signin/");
       return;
     }
 
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const gamePath = GAME_PATHS[game];
 
     if (!gamePath) {
-      location.replace("/signin.html");
+      location.replace("/signin/");
       return;
     }
 
