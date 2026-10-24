@@ -1,52 +1,63 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Edustar — Learning Portal</title>
+  <meta name="theme-color" content="#10131c">
+  <meta name="description" content="Explore Edustar, an independent digital learning portal featuring interactive activities, browser-based games, and resources for a quick break between lessons.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Edustar">
+  <meta property="og:title" content="Edustar | Interactive Learning Portal">
+  <meta property="og:description" content="Discover interactive activities, browser-based games, and digital learning resources in one simple portal.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Edustar | Interactive Learning Portal">
+  <meta name="twitter:description" content="Discover interactive activities, browser-based games, and digital learning resources in one simple portal.">
+  <title>Edustar | Interactive Learning Portal</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <header class="nav">
-    <a class="brand" href="/">edustar<span>.</span></a>
-    <span class="nav-label">STUDENT PORTAL</span>
+    <a class="brand" href="/" aria-label="Edustar home">edustar<span>.</span></a>
+    <span class="nav-label">INTERACTIVE LEARNING PORTAL</span>
   </header>
 
   <main class="home">
     <section class="hero">
-      <p class="eyebrow">YOUR DIGITAL CAMPUS</p>
+      <p class="eyebrow">LEARN · EXPLORE · PLAY</p>
       <h1>Make room for<br><span>something new.</span></h1>
       <p class="intro">
-        Your place to explore interactive activities, discover games,
-        and take a break between lessons.
+        Edustar brings interactive activities and browser-based games together
+        in one place. Explore the available resources, try something new, and
+        take a short break between lessons.
       </p>
-      <a class="button" href="/signin.html">Open the game portal <span>→</span></a>
+      <a class="button" href="/signin/">Open the resource portal <span>→</span></a>
     </section>
 
     <section class="resource">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">YOUR RESOURCES</p>
-          <h2>Ready when you are.</h2>
+          <p class="eyebrow">EXPLORE THE PORTAL</p>
+          <h2>Resources, ready when you are.</h2>
         </div>
-        <span class="resource-count">01 RESOURCE</span>
+        <span class="resource-count">INTERACTIVE RESOURCES</span>
       </div>
 
-      <a class="resource-card" href="/signin.html">
-        <div class="resource-icon">E</div>
+      <a class="resource-card" href="/signin/">
+        <div class="resource-icon" aria-hidden="true">E</div>
         <div class="resource-info">
           <h3>Interactive Game Library</h3>
-          <p>Open the game portal and launch the available activity.</p>
+          <p>Browse the available browser-based activity and launch it from the portal.</p>
         </div>
-        <span class="card-arrow">↗</span>
+        <span class="card-arrow" aria-hidden="true">↗</span>
       </a>
+      <p class="muted" style="margin-top:16px">Edustar is an independent project. Resource availability may change as the portal is updated.</p>
     </section>
   </main>
 
   <footer class="footer">
     <span>EDUSTAR © 2026</span>
-    <span>LEARN · EXPLORE · PLAY</span>
+    <span>INDEPENDENT DIGITAL PROJECT</span>
   </footer>
 </body>
 </html>
