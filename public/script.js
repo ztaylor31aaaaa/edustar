@@ -1,71 +1,92 @@
 
-const TEST_PASSWORD = "stupidlyakward";
+"use strict";
 
+const ACCESS_KEY = "edustar_access";
+const ACCESS_CODE = "stupidlyakward";
+
+// The game files must exist at these paths inside public/.
 const GAME_PATHS = {
-    game1: "/games/game1.html",
-    game2: "/games/game2.html"
+  game1: "/games/snubby/snubby/mathlesson1.html"
 };
 
-const GAME_NAMES = {
-    game1: "Learning Activity One",
-    game2: "Learning Activity Two"
-};
-
-function getSelectedGame() {
-    const params = new URLSearchParams(window.location.search);
-    const game = params.get("game");
-
-    return Object.hasOwn(GAME_PATHS, game) ? game : null;
+function hasAccess() {
+  return sessionStorage.getItem(ACCESS_KEY) === "granted";
 }
 
-// Sign-in page
-const passwordForm = document.getElementById("password-form");
+function grantAccess() {
+  sessionStorage.setItem(ACCESS_KEY, "granted");
+}
 
-if (passwordForm) {
-    const selectedGame = getSelectedGame();
-    const nameElement = document.getElementById("resource-name");
-    const errorElement = document.getElementById("password-error");
-    const passwordInput = document.getElementById("password-input");
+document.addEventListener("DOMContentLoaded", () => {
+  const accessForm = document.getElementById("access-form");
 
-    if (!selectedGame) {
-        nameElement.textContent = "Resource unavailable";
-        passwordForm.hidden = true;
-        errorElement.textContent =
-            "Please return to the resource library and select an activity.";
-    } else {
-        nameElement.textContent = GAME_NAMES[selectedGame];
+  if (accessForm) {
+    accessForm.addEventListener("submit", event => {
+      event.preventDefault();
 
-        passwordForm.addEventListener("submit", (event) => {
-            event.preventDefault();
+      const input = document.getElementById("access-code");
+      const error = document.getElementById("access-error");
 
-            if (passwordInput.value !== TEST_PASSWORD) {
-                errorElement.textContent =
-                    "The password is incorrect. Please try again.";
-                passwordInput.select();
-                return;
-            }
+      if (input.value !== ACCESS_CODE) {
+        error.hidden = false;
+        input.select();
+        return;
+      }
 
-            window.location.href =
-                "/play.html?game=" + encodeURIComponent(selectedGame);
-        });
+      error.hidden = true;
+      grantAccess();
+
+      const params = new URLSearchParams(location.search);
+      const requestedGame = params.get("game") || "game1";
+
+      if (!GAME_PATHS[requestedGame]) {
+        location.href = "/play.html";
+        return;
+      }
+
+      location.href =
+        "/play.html?game=" + encodeURIComponent(requestedGame);
+    });
+  }
+
+  const frame = document.getElementById("game-frame");
+
+  if (frame) {
+    if (!hasAccess()) {
+      location.replace("/signin.html");
+      return;
     }
-}
 
-// Game page
-const gameFrame = document.getElementById("game-frame");
+    const params = new URLSearchParams(location.search);
+    const game = params.get("game") || "game1";
+    const gamePath = GAME_PATHS[game];
 
-if (gameFrame) {
-    const selectedGame = getSelectedGame();
-
-    if (selectedGame) {
-        gameFrame.src = GAME_PATHS[selectedGame];
-    } else {
-        document.body.innerHTML = `
-            <main style="padding:40px;font-family:Arial,sans-serif">
-                <h2>Resource unavailable</h2>
-                <p>Please return to the resource library and select a game.</p>
-                <a href="/">Return to resources</a>
-            </main>
-        `;
+    if (!gamePath) {
+      location.replace("/signin.html");
+      return;
     }
-}
+
+    frame.src = gamePath;
+
+    const exitButton = document.querySelector(".exit-game");
+
+    if (exitButton) {
+      let hideTimer;
+
+      function showExit() {
+        exitButton.classList.add("visible");
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => {
+          exitButton.classList.remove("visible");
+        }, 2200);
+      }
+
+      document.addEventListener("mousemove", showExit);
+      document.addEventListener("keydown", showExit);
+      exitButton.addEventListener("mouseenter", () => {
+        clearTimeout(hideTimer);
+        exitButton.classList.add("visible");
+      });
+    }
+  }
+});
