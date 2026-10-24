@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resource Access | Northstar Learning</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
+</head>
+<body class="signin-body">
+    <nav class="navbar">
+        <a href="/" class="brand">
+            <span class="brand-mark">N</span>
+            <span>Northstar <span class="brand-light">Learning</span></span>
+        </a>
+        <a class="back-link" href="/">Back to resources</a>
+    </nav>
+
+    <main class="signin-layout">
+        <section class="signin-info">
+            <span class="eyebrow">RESOURCE LIBRARY</span>
+            <h1>Your next<br>step starts here.</h1>
+            <p>
+                Enter your access password to continue to the
+                selected interactive resource.
+            </p>
+            <div class="access-note">
+                <span class="status-dot"></span>
+                Resource access
+            </div>
+        </section>
+
+        <section class="signin-card">
+            <span class="eyebrow">ACCOUNT ACCESS</span>
+            <h2 id="resource-name">Learning Activity</h2>
+            <p class="signin-description">
+                Enter the password to continue.
+            </p>
+
+            <form id="password-form">
+                <label for="password-input">Access password</label>
+                <input
+                    id="password-input"
+                    type="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+                <p id="password-error" class="error-message"
+                   role="alert"></p>
+                <button class="primary-button signin-button" type="submit">
+                    Continue to resource <span>→</span>
+                </button>
+            </form>
+
+            <p class="signin-footer">
+                <a href="/">Return to the resource library</a>
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <a href="/" class="footer-brand">Northstar Learning</a>
+        <span>Independent learning resources · 2026</span>
+    </footer>
+</body>
+</html>
