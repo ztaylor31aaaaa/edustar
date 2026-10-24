@@ -227,11 +227,15 @@ iframe {
     }
 }
 
+/* Fix oversized bottom image */
 #bottomz {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    left: 10;
+    width: 40px;
+    height: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    object-fit: contain;
+    left: 10px;
+    bottom: 10px;
 }
 
 /* Game Display */
