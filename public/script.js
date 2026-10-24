@@ -1,101 +1,71 @@
 
 const TEST_PASSWORD = "stupidlyakward";
 
-// These paths will be used for your two game websites.
 const GAME_PATHS = {
     game1: "/games/game1.html",
     game2: "/games/game2.html"
 };
 
-const homePage = document.getElementById("home-page");
-const gamePage = document.getElementById("game-page");
-const passwordModal = document.getElementById("password-modal");
+const GAME_NAMES = {
+    game1: "Learning Activity One",
+    game2: "Learning Activity Two"
+};
+
+function getSelectedGame() {
+    const params = new URLSearchParams(window.location.search);
+    const game = params.get("game");
+
+    return Object.hasOwn(GAME_PATHS, game) ? game : null;
+}
+
+// Sign-in page
 const passwordForm = document.getElementById("password-form");
-const passwordInput = document.getElementById("password-input");
-const passwordError = document.getElementById("password-error");
-const gameFrame = document.getElementById("game-frame");
-const gameTitle = document.getElementById("game-title");
 
-let selectedGame = "game1";
+if (passwordForm) {
+    const selectedGame = getSelectedGame();
+    const nameElement = document.getElementById("resource-name");
+    const errorElement = document.getElementById("password-error");
+    const passwordInput = document.getElementById("password-input");
 
-function openPasswordPrompt(game) {
-    selectedGame = game;
-
-    passwordInput.value = "";
-    passwordError.textContent = "";
-
-    passwordModal.classList.remove("hidden");
-    passwordInput.focus();
-}
-
-function closePasswordPrompt() {
-    passwordModal.classList.add("hidden");
-    passwordError.textContent = "";
-}
-
-function openGame(game) {
-    const path = GAME_PATHS[game];
-
-    if (!path) {
-        passwordError.textContent = "That activity could not be found.";
-        return;
-    }
-
-    closePasswordPrompt();
-
-    homePage.classList.add("hidden");
-    gamePage.classList.remove("hidden");
-
-    gameTitle.textContent =
-        game === "game1"
-            ? "Interactive Activity One"
-            : "Interactive Activity Two";
-
-    // Keep the landing page HTML unchanged when adding the games.
-    gameFrame.src = path;
-
-    window.scrollTo(0, 0);
-}
-
-document.querySelectorAll("[data-game]").forEach((button) => {
-    button.addEventListener("click", () => {
-        openPasswordPrompt(button.dataset.game);
-    });
-});
-
-document.getElementById("start-button").addEventListener("click", () => {
-    openPasswordPrompt("game1");
-});
-
-document.getElementById("close-modal").addEventListener("click", () => {
-    closePasswordPrompt();
-});
-
-passwordModal.addEventListener("click", (event) => {
-    if (event.target === passwordModal) {
-        closePasswordPrompt();
-    }
-});
-
-passwordForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    const enteredPassword = passwordInput.value;
-
-    if (enteredPassword === TEST_PASSWORD) {
-        openGame(selectedGame);
+    if (!selectedGame) {
+        nameElement.textContent = "Resource unavailable";
+        passwordForm.hidden = true;
+        errorElement.textContent =
+            "Please return to the resource library and select an activity.";
     } else {
-        passwordError.textContent = "Incorrect password. Please try again.";
-        passwordInput.select();
+        nameElement.textContent = GAME_NAMES[selectedGame];
+
+        passwordForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            if (passwordInput.value !== TEST_PASSWORD) {
+                errorElement.textContent =
+                    "The password is incorrect. Please try again.";
+                passwordInput.select();
+                return;
+            }
+
+            window.location.href =
+                "/play.html?game=" + encodeURIComponent(selectedGame);
+        });
     }
-});
+}
 
-document.getElementById("back-button").addEventListener("click", () => {
-    // Stop the game when returning to the landing page.
-    gameFrame.src = "about:blank";
+// Game page
+const gameFrame = document.getElementById("game-frame");
 
-    gamePage.classList.add("hidden");
-    homePage.classList.remove("hidden");
+if (gameFrame) {
+    const selectedGame = getSelectedGame();
 
-    window.scrollTo(0, 0);
-});
+    if (selectedGame) {
+        gameFrame.src = GAME_PATHS[selectedGame];
+    } else {
+        document.body.innerHTML = `
+            <main style="padding:40px;font-family:Arial,sans-serif">
+                <h2>Resource unavailable</h2>
+                <p>Please return to the resource library and select a game.</p>
+                <a href="/">Return to resources</a>
+            </main>
+        `;
+    }
+}
