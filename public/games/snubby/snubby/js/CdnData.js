@@ -4,23 +4,7 @@
 
 
 function getcdnlink() {
-    const hostname = window.location.hostname.toLowerCase();
-
-    // Keep the original local development server.
-    if (
-        hostname === 'localhost' ||
-        hostname === '127.0.0.1' ||
-        hostname === '::1' ||
-        hostname === '[::1]'
-    ) {
-        return 'http://100.86.228.91:4253/';
-    }
-
-    // Use the known CDN for the hosted site.
-    return 'https://sme-library.global.ssl.fastly.net/';
-}
-
-
+    const hostname = global.location.hostname.toLowerCase();
 
     if (hostname.endsWith('.global.ssl.fastly.net')) {
       return 'https://sme-library.global.ssl.fastly.net/';
@@ -36,8 +20,7 @@ function getcdnlink() {
       return 'http://100.86.228.91:4253/';
     }
 
-    const create_link = hostname.split('.').filter(Boolean);
-    return `https://cdn.${create_link.slice(-2).join('.')}/`;
+    return 'https://sme-library.global.ssl.fastly.net/';
   }
 
   function addstamp(url) {
