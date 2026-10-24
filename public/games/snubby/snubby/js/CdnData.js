@@ -2,8 +2,35 @@
   const datacacheprefix = 'sme-data-cache:';
   const realfetch = global.fetch.bind(global);
 
-  function getcdnlink() {
-    const hostname = global.location.hostname;
+function getcdnlink() {
+    const hostname = window.location.hostname.toLowerCase();
+
+    // Keep the existing Fastly CDN.
+    if (hostname.endsWith('.global.ssl.fastly.net')) {
+        return 'https://sme-library.global.ssl.fastly.net/';
+    }
+
+    // Use the original asset CDN on localhost and GitHub Pages.
+    if (
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '::1' ||
+        hostname === '[::1]' ||
+        hostname.endsWith('.github.io')
+    ) {
+        return 'https://cdn.startmyeducation.net/';
+    }
+
+    // Use the CDN belonging to the site's own domain.
+    const parts = hostname.split('.').filter(Boolean);
+
+    if (parts.length >= 2) {
+        return `https://cdn.${parts.slice(-2).join('.')}/`;
+    }
+
+    return 'https://cdn.startmyeducation.net/';
+}
+
 
     if (hostname.endsWith('.global.ssl.fastly.net')) {
       return 'https://sme-library.global.ssl.fastly.net/';
