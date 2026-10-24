@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       location.href =
-        "/play.html?game=" + encodeURIComponent(requestedGame);
+        "/play/?game=" + encodeURIComponent(requestedGame);
     });
   }
 
