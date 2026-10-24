@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131c">
+  <meta name="description" content="Open the Edustar interactive resource portal using your access code.">
+  <meta name="robots" content="noindex, follow">
+  <title>Resource Access | Edustar</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/script.js" defer></script>
+</head>
+<body class="access-page">
+  <header class="nav">
+    <a class="brand" href="/" aria-label="Edustar home">edustar<span>.</span></a>
+    <a class="back-link" href="/">← Home</a>
+  </header>
+
+  <main class="access-layout">
+    <section class="access-card">
+      <div class="access-mark" aria-hidden="true">E</div>
+      <p class="eyebrow">EDUSTAR RESOURCE ACCESS</p>
+      <h1>Welcome back.</h1>
+      <p class="muted">Enter your access code to open the interactive resource portal.</p>
+
+      <form id="access-form">
+        <label for="access-code">Access code</label>
+        <input
+          id="access-code"
+          type="password"
+          placeholder="Enter access code"
+          autocomplete="off"
+          required
+        >
+        <p id="access-error" class="error" role="alert" hidden>
+          That code wasn't recognised. Try again.
+        </p>
+        <button class="button button-full" type="submit">Continue <span>→</span></button>
+      </form>
+
+      <p class="fine-print">EDUSTAR · INDEPENDENT INTERACTIVE RESOURCE PORTAL</p>
+    </section>
+  </main>
+</body>
+</html>
