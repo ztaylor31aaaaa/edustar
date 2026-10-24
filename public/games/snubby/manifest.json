@@ -1,0 +1,13 @@
+{
+    "name": "Start Your Education Now | Free Online Courses, Lessons Practice",
+    "short_name": "SME | Free Online Courses, Lessons Practice",
+    "start_url": ".",
+    "display": "fullscreen",
+    "background_color": "white",
+    "description": "Start Your Education Now | Free Online Courses, Lessons Practice",
+    "icons": [{
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }]
+  }
