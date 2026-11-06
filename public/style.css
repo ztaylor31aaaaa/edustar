@@ -164,3 +164,139 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Sign-in page */
+.signin-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.signin-main {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: 65px 20px;
+}
+
+.signin-card {
+    width: min(100%, 440px);
+    box-sizing: border-box;
+    padding: 42px;
+    background: #fff;
+    border: 1px solid #eee8d8;
+    border-radius: 12px;
+    box-shadow: 0 12px 35px #3a2d0810;
+}
+
+.signin-eyebrow {
+    margin: 0 0 14px;
+    color: #9a7800;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.signin-card h1 {
+    margin: 0 0 12px;
+    font-size: 36px;
+    letter-spacing: -1px;
+}
+
+.signin-description {
+    margin: 0 0 28px;
+    color: #686868;
+    line-height: 1.65;
+}
+
+.signin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.signin-form label {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.signin-form input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #d8d3c5;
+    border-radius: 6px;
+    background: #fffefa;
+    color: #252525;
+    font: inherit;
+}
+
+.signin-form input:focus {
+    outline: 3px solid #f5c40055;
+    border-color: #c49b00;
+}
+
+.signin-submit {
+    margin-top: 8px;
+    padding: 13px 18px;
+    border: 0;
+    border-radius: 6px;
+    background: #f5c400;
+    color: #252525;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.signin-submit:hover {
+    background: #e8b900;
+}
+
+.signin-submit span {
+    margin-left: 8px;
+}
+
+.signin-error {
+    margin: 0;
+    color: #b42318;
+    font-size: 13px;
+}
+
+.signin-home-link {
+    display: inline-block;
+    margin-top: 24px;
+    color: #806300;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.signin-home-link:hover {
+    text-decoration: underline;
+}
+
+.signin-footer {
+    padding: 24px;
+    background: #252525;
+    color: #fff;
+    text-align: center;
+}
+
+.signin-footer p {
+    margin: 5px;
+}
+
+.signin-footer p + p {
+    color: #d2d2d2;
+    font-size: 13px;
+}
+
+@media (max-width: 500px) {
+    .signin-card {
+        padding: 30px 24px;
+    }
+
+    .signin-card h1 {
+        font-size: 30px;
+    }
+}
