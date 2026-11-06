@@ -1,63 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10131c">
-  <meta name="description" content="Explore Edustar, an independent digital learning portal featuring interactive activities, browser-based games, and resources for a quick break between lessons.">
-  <meta name="robots" content="index, follow">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Edustar">
-  <meta property="og:title" content="Edustar | Interactive Learning Portal">
-  <meta property="og:description" content="Discover interactive activities, browser-based games, and digital learning resources in one simple portal.">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Edustar | Interactive Learning Portal">
-  <meta name="twitter:description" content="Discover interactive activities, browser-based games, and digital learning resources in one simple portal.">
-  <title>Edustar | Interactive Learning Portal</title>
-  <link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accelerate My Education</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header class="nav">
-    <a class="brand" href="/" aria-label="Edustar home">edustar<span>.</span></a>
-    <span class="nav-label">INTERACTIVE LEARNING PORTAL</span>
-  </header>
 
-  <main class="home">
-    <section class="hero">
-      <p class="eyebrow">LEARN · EXPLORE · PLAY</p>
-      <h1>Make room for<br><span>something new.</span></h1>
-      <p class="intro">
-        Edustar brings interactive activities and browser-based games together
-        in one place. Explore the available resources, try something new, and
-        take a short break between lessons.
-      </p>
-      <a class="button" href="/signin/">Open the resource portal <span>→</span></a>
-    </section>
+    <header class="site-header">
+        <a href="/" class="logo">accelerate<span>my</span>education.</a>
 
-    <section class="resource">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">EXPLORE THE PORTAL</p>
-          <h2>Resources, ready when you are.</h2>
-        </div>
-        <span class="resource-count">INTERACTIVE RESOURCES</span>
-      </div>
+        <nav class="main-nav">
+            <a href="/">Home</a>
+            <a href="#subjects">Subjects</a>
+            <a href="#about">About</a>
+        </nav>
 
-      <a class="resource-card" href="/signin/">
-        <div class="resource-icon" aria-hidden="true">E</div>
-        <div class="resource-info">
-          <h3>Interactive Game Library</h3>
-          <p>Browse the available browser-based activity and launch it from the portal.</p>
-        </div>
-        <span class="card-arrow" aria-hidden="true">↗</span>
-      </a>
-      <p class="muted" style="margin-top:16px">Edustar is an independent project. Resource availability may change as the portal is updated.</p>
-    </section>
-  </main>
+        <a href="/signin/" class="login-button">Sign in</a>
+    </header>
 
-  <footer class="footer">
-    <span>EDUSTAR © 2026</span>
-    <span>INDEPENDENT DIGITAL PROJECT</span>
-  </footer>
+    <main>
+        <section class="hero">
+            <h1>Learn More. Achieve More.</h1>
+            <p>Explore lessons, practise new skills and improve your understanding across a range of subjects.</p>
+            <a href="#subjects" class="primary-button">Start Learning</a>
+        </section>
+
+        <section class="subjects" id="subjects">
+            <h2>Explore Learning Topics</h2>
+            <p>Choose a topic to get started.</p>
+
+            <div class="subject-grid">
+                <a href="/subjects/mathematics/" class="subject-card">
+                    <h3>Mathematics</h3>
+                    <p>Fractions, algebra, geometry and more.</p>
+                    <span>Explore topics →</span>
+                </a>
+
+                <a href="/subjects/science/" class="subject-card">
+                    <h3>Science</h3>
+                    <p>Biology, chemistry, physics and the world around us.</p>
+                    <span>Explore topics →</span>
+                </a>
+
+                <a href="/subjects/english/" class="subject-card">
+                    <h3>English</h3>
+                    <p>Writing, grammar, reading and comprehension.</p>
+                    <span>Explore topics →</span>
+                </a>
+
+                <a href="/subjects/geometry/" class="subject-card">
+                    <h3>Geometry</h3>
+                    <p>Angles, shapes, area and measurement.</p>
+                    <span>Explore topics →</span>
+                </a>
+
+                <a href="/subjects/algebra/" class="subject-card">
+                    <h3>Algebra</h3>
+                    <p>Expressions, equations and simplifying.</p>
+                    <span>Explore topics →</span>
+                </a>
+
+                <a href="/subjects/revision/" class="subject-card">
+                    <h3>Revision</h3>
+                    <p>Review important concepts and practise what you've learned.</p>
+                    <span>Explore topics →</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="about" id="about">
+            <h2>About Accelerate My Education</h2>
+            <p>A learning platform designed to make studying easier, with organised topics and resources to help students build their knowledge.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Accelerate My Education</p>
+        <p>Learning resources for students.</p>
+    </footer>
+
 </body>
 </html>
