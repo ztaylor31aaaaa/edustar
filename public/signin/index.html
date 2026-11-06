@@ -3,43 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10131c">
-  <meta name="description" content="Open the Edustar interactive resource portal using your access code.">
-  <meta name="robots" content="noindex, follow">
-  <title>Resource Access | Edustar</title>
+  <meta name="theme-color" content="#fff8dc">
+  <meta name="description" content="Sign in to Accelerate My Education.">
+  <title>Sign in | Accelerate My Education</title>
   <link rel="stylesheet" href="/style.css">
   <script src="/script.js" defer></script>
 </head>
-<body class="access-page">
-  <header class="nav">
-    <a class="brand" href="/" aria-label="Edustar home">edustar<span>.</span></a>
-    <a class="back-link" href="/">← Home</a>
+<body class="signin-page">
+  <header class="site-header">
+    <a href="/" class="logo">accelerate<span>my</span>education.</a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/#subjects">Subjects</a>
+      <a href="/#about">About</a>
+    </nav>
+    <a href="/signin/" class="login-button" aria-current="page">Sign in</a>
   </header>
 
-  <main class="access-layout">
-    <section class="access-card">
-      <div class="access-mark" aria-hidden="true">E</div>
-      <p class="eyebrow">EDUSTAR RESOURCE ACCESS</p>
+  <main class="signin-main">
+    <section class="signin-card">
+      <p class="signin-eyebrow">STUDENT ACCESS</p>
       <h1>Welcome back.</h1>
-      <p class="muted">Enter your access code to open the interactive resource portal.</p>
+      <p class="signin-description">Enter your access code to continue to your learning resources.</p>
 
-      <form id="access-form">
+      <form id="access-form" class="signin-form">
         <label for="access-code">Access code</label>
         <input
           id="access-code"
           type="password"
-          placeholder="Enter access code"
-          autocomplete="off"
+          placeholder="Enter your access code"
+          autocomplete="current-password"
           required
         >
-        <p id="access-error" class="error" role="alert" hidden>
+        <p id="access-error" class="signin-error" role="alert" hidden>
           That code wasn't recognised. Try again.
         </p>
-        <button class="button button-full" type="submit">Continue <span>→</span></button>
+        <button class="signin-submit" type="submit">Continue <span aria-hidden="true">→</span></button>
       </form>
 
-      <p class="fine-print">EDUSTAR · INDEPENDENT INTERACTIVE RESOURCE PORTAL</p>
+      <a class="signin-home-link" href="/">← Back to home</a>
     </section>
   </main>
+
+  <footer class="signin-footer">
+    <p>Accelerate My Education</p>
+    <p>Learning resources for students.</p>
+  </footer>
 </body>
 </html>
