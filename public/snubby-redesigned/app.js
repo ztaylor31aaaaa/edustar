@@ -44,7 +44,7 @@
   function showDeveloperGate(){
     showModal("Developer access",'<p>Enter the one-time code printed by the developer console command for this tab.</p><label class="eyebrow" for="dev-code-input">SESSION CODE</label><input class="field" id="dev-code-input" autocomplete="off" spellcheck="false" placeholder="Enter developer code">',[
       {label:"Cancel",primary:false,action:closeModal},
-      {label:"Unlock",primary:true,action:()=>{const input=$("#dev-code-input");if(input&&input.value.trim().toUpperCase()===devCode){sessionStorage.setItem("snubby_redesign_dev_unlocked","true");closeModal();toast("Developer mode enabled for this tab.");document.body.classList.add("dev-unlocked")}else{toast("That code is not correct for this session.");if(input)input.select()}}}
+      {label:"Unlock",primary:true,action:()=>{const input=$("#dev-code-input");if(input&&input.value.trim().toUpperCase()===devCode){sessionStorage.setItem("snubby_redesign_dev_unlocked","true");closeModal();toast("Developer mode enabled for this tab.");document.body.classList.add("dev-unlocked");if(sessionStorage.getItem("snubby_redesign_toured")!=="true"){guideStep=0;showGuide()}}else{toast("That code is not correct for this session.");if(input)input.select()}}}
     ]);$("#dev-code-input").focus();
   }
   function showView(view){
