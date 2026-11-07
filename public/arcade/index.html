@@ -7,40 +7,46 @@
 <div class="modal-layer" id="modal-layer" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-header"><span class="brand-icon">☀</span><button class="icon-close" data-action="close-modal">×</button></div><div id="modal-body"></div><div id="modal-footer" class="modal-footer"></div></section></div><div id="toast-stack" class="toast-stack" aria-live="polite"></div><script>
 (()=> {
   const views = {
-    home: ["Home", "Welcome to SunsetOS", "The main interface could not finish starting. You can still use this recovery screen while the app is repaired."],
-    games: ["Discover games", "Game catalogue unavailable", "The Snubby catalogue is currently unavailable (the server may be returning 503). The rest of SunsetOS should remain usable."],
-    "my-library": ["My library", "Your library", "The full library view is temporarily unavailable while the main app is recovering."],
-    favourites: ["Favourites", "Your favourites", "The full favourites view is temporarily unavailable while the main app is recovering."],
-    recent: ["Recently played", "Recent games", "The full recent-games view is temporarily unavailable while the main app is recovering."],
-    "avatar-market": ["Avatar market", "Avatar market", "The marketplace will return when the main app has finished loading."],
-    profile: ["Profile & stats", "Player profile", "Your profile view will return when the main app has finished loading."],
-    chat: ["Chat room", "Local notes", "The chat view will return when the main app has finished loading."],
-    ai: ["AI assistant", "AI workspace", "The AI workspace will return when the main app has finished loading."],
-    settings: ["Personalise", "Settings", "The settings view will return when the main app has finished loading."]
+    home: ["Home", "Welcome to SunsetOS", "The main application has not finished starting."],
+    games: ["Discover games", "Game catalogue unavailable", "The Snubby catalogue may be offline (503). This should not prevent the rest of SunsetOS from loading."],
+    "my-library": ["My library", "Your library", "The library view is unavailable until the main application starts."],
+    favourites: ["Favourites", "Your favourites", "The favourites view is unavailable until the main application starts."],
+    recent: ["Recently played", "Recent games", "The recent-games view is unavailable until the main application starts."],
+    "avatar-market": ["Avatar market", "Avatar market", "The marketplace is unavailable until the main application starts."],
+    profile: ["Profile & stats", "Player profile", "The profile view is unavailable until the main application starts."],
+    chat: ["Chat room", "Local notes", "The chat view is unavailable until the main application starts."],
+    ai: ["AI assistant", "AI workspace", "The AI workspace is unavailable until the main application starts."],
+    settings: ["Personalise", "Settings", "The settings view is unavailable until the main application starts."]
   };
+  let failure = "";
   function recover() {
     if (window.__sunsetBooted) return;
     const page = document.getElementById("page");
     const title = document.getElementById("view-name");
-    const shell = document.getElementById("player-shell");
     if (!page || !title) return;
-    if (shell) shell.hidden = true;
+    const item = views.home;
+    title.textContent = item[0];
     page.hidden = false;
+    page.innerHTML = '<div class="page-heading"><div><p class="kicker">SUNSETOS RECOVERY</p><h1>' + item[1] + '</h1><p>' + item[2] + '</p></div></div><section class="settings-card"><h2>Startup diagnostic</h2><p>The app script did not report a successful startup. The issue may be a JavaScript error, blocked browser storage, or an expired sign-in session.</p><p><strong>Diagnostic:</strong> <code id="sunset-error-detail"></code></p><p>Open the browser console (F12 → Console) and check for the first red error if this message does not identify it.</p></section>';
+    const detail = document.getElementById("sunset-error-detail");
+    detail.textContent = failure || "No JavaScript error was captured. The app may have exited early, including because the sign-in token was missing.";
     document.getElementById("catalogue-status").textContent = "Recovery mode";
-    function show(view) {
-      const item = views[view] || views.home;
-      title.textContent = item[0];
-      page.innerHTML = '<div class="page-heading"><div><p class="kicker">SUNSETOS RECOVERY</p><h1>' + item[1] + '</h1><p>' + item[2] + '</p></div></div><section class="settings-card"><h2>What happened?</h2><p>The main application script did not finish starting. This recovery screen keeps the navigation responsive instead of leaving a blank page. The Snubby catalogue outage is separate from the interface startup problem.</p><p>Reload the page after the application script has been repaired.</p></section>';
-      document.querySelectorAll(".nav-link[data-view]").forEach(b => b.classList.toggle("active", b.dataset.view === view));
-    }
-    document.addEventListener("click", e => {
-      const button = e.target.closest(".nav-link[data-view]");
-      if (button && !window.__sunsetBooted) show(button.dataset.view);
-    }, true);
-    show("home");
+    document.querySelectorAll(".nav-link[data-view]").forEach(b => b.addEventListener("click", () => {
+      const next = views[b.dataset.view] || item;
+      title.textContent = next[0];
+      page.querySelector("h1").textContent = next[1];
+      page.querySelector(".page-heading p:last-child").textContent = next[2];
+      document.querySelectorAll(".nav-link[data-view]").forEach(x => x.classList.toggle("active", x === b));
+    }));
   }
-  window.addEventListener("error", () => { if (!window.__sunsetBooted) recover(); }, true);
-  window.addEventListener("unhandledrejection", () => { if (!window.__sunsetBooted) recover(); });
-  setTimeout(recover, 2500);
+  window.addEventListener("error", e => {
+    failure = e.message ? e.message + (e.filename ? " (" + e.filename.split("/").pop() + ":" + e.lineno + ")" : "") : "A script failed to load.";
+    if (!window.__sunsetBooted) recover();
+  }, true);
+  window.addEventListener("unhandledrejection", e => {
+    failure = "Unhandled promise rejection: " + String(e.reason && (e.reason.message || e.reason));
+    if (!window.__sunsetBooted) recover();
+  });
+  setTimeout(recover, 8000);
 })();
 </script></body></html>
