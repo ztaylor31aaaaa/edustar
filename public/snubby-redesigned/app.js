@@ -6,7 +6,7 @@
  Object.defineProperty(window,"code",{configurable:false,get:()=>"code"});
  Object.defineProperty(window,"devmode",{configurable:false,set(value){if(value==="code"){console.info("%cSNUBBY DEV ACCESS","font-weight:bold;color:#f4c542;font-size:14px");console.info("Your session code: %c"+devCode,"font-weight:bold;color:#fff;font-size:18px;letter-spacing:2px");}else console.info("Unknown devmode command. Available command: devmode = code");}});
  const $=(s,r=document)=>r.querySelector(s),backdrop=$("#modal-backdrop"),modalContent=$("#modal-content"),modalActions=$("#modal-actions");
- const games=[{id:"game1",name:"Featured Game",description:"A standalone game bundled with this site.",src:"/games/game1.html",category:"Featured",cover:"S"}];
+ const games=[{id:"game1",name:"Bundled HTML game",description:"A local HTML game file opened in the built-in player.",src:"/games/game1.html",category:"Featured",cover:"S"}];
  let currentTour=0,activeGame=null;
  const tour=[
   {target:"[data-tour=home]",title:"Your home screen",text:"This is the home screen. Use the main button to jump straight to the game library."},
