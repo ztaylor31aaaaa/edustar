@@ -4,4 +4,43 @@
 <aside class="sidebar"><a class="brand" href="#home"><span class="brand-icon">☀</span><span>sunset<span class="brand-muted">OS</span></span></a><p class="nav-caption">YOUR SPACE</p><button class="nav-link active" data-view="home"><span>⌂</span> Home</button><button class="nav-link" data-view="games"><span>⌕</span> Discover games <b id="game-count">—</b></button><button class="nav-link" data-view="my-library"><span>▦</span> My library</button><button class="nav-link" data-view="favourites"><span>☆</span> Favourites</button><button class="nav-link" data-view="recent"><span>◷</span> Recently played</button><p class="nav-caption">PERSONAL</p><button class="nav-link" data-view="avatar-market"><span>◇</span> Avatar market</button><button class="nav-link" data-view="profile"><span>◉</span> Profile & stats</button><button class="nav-link" data-view="chat"><span>▤</span> Chat room</button><button class="nav-link" data-view="ai"><span>✧</span> AI assistant</button><div class="running-games"><p class="nav-caption">RUNNING GAMES</p><div id="running-game-tabs"></div></div><div class="sidebar-spacer"></div><p class="nav-caption">SYSTEM</p><button class="nav-link" data-view="settings"><span>⚙</span> Personalise</button><button class="nav-link" data-action="fullscreen-app"><span>⛶</span> Fullscreen app</button><div class="sidebar-foot"><span class="online-dot"></span> SunsetOS ready</div></aside>
 <main class="main"><header class="topbar"><div><span class="crumb">SUNSETOS</span><span class="crumb-sep">/</span><strong id="view-name">Home</strong></div><div class="top-actions"><span class="coin-pill">✦ <b id="coin-count">0</b> coins</span><span id="catalogue-status" class="status-label">Offline mode</span><button class="avatar" data-action="profile">S</button></div></header><div class="page" id="page"></div><section id="player-shell" class="player-shell" hidden><header class="player-bar"><div class="player-title-wrap"><span class="live-dot"></span><strong id="player-title">Game</strong><span id="player-time" class="player-time">00:00</span></div><div class="player-actions"><button class="player-btn" data-action="player-minimise" title="Back to pages">—</button><button class="player-btn" data-action="player-fullscreen" title="Fullscreen">⛶</button><button class="player-btn" data-action="player-reload" title="Reload">↻</button><button class="player-btn close" data-action="player-close" title="Close">×</button></div></header><div class="player-stage" id="player-stage"></div><div class="miniplayer-label">GAME PAUSED IN MINI VIEW · RESTORE TO CONTINUE</div></section></main></div>
 
-<div class="modal-layer" id="modal-layer" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-header"><span class="brand-icon">☀</span><button class="icon-close" data-action="close-modal">×</button></div><div id="modal-body"></div><div id="modal-footer" class="modal-footer"></div></section></div><div id="toast-stack" class="toast-stack" aria-live="polite"></div></body></html>
+<div class="modal-layer" id="modal-layer" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-header"><span class="brand-icon">☀</span><button class="icon-close" data-action="close-modal">×</button></div><div id="modal-body"></div><div id="modal-footer" class="modal-footer"></div></section></div><div id="toast-stack" class="toast-stack" aria-live="polite"></div><script>
+(()=> {
+  const views = {
+    home: ["Home", "Welcome to SunsetOS", "The main interface could not finish starting. You can still use this recovery screen while the app is repaired."],
+    games: ["Discover games", "Game catalogue unavailable", "The Snubby catalogue is currently unavailable (the server may be returning 503). The rest of SunsetOS should remain usable."],
+    "my-library": ["My library", "Your library", "The full library view is temporarily unavailable while the main app is recovering."],
+    favourites: ["Favourites", "Your favourites", "The full favourites view is temporarily unavailable while the main app is recovering."],
+    recent: ["Recently played", "Recent games", "The full recent-games view is temporarily unavailable while the main app is recovering."],
+    "avatar-market": ["Avatar market", "Avatar market", "The marketplace will return when the main app has finished loading."],
+    profile: ["Profile & stats", "Player profile", "Your profile view will return when the main app has finished loading."],
+    chat: ["Chat room", "Local notes", "The chat view will return when the main app has finished loading."],
+    ai: ["AI assistant", "AI workspace", "The AI workspace will return when the main app has finished loading."],
+    settings: ["Personalise", "Settings", "The settings view will return when the main app has finished loading."]
+  };
+  function recover() {
+    if (window.__sunsetBooted) return;
+    const page = document.getElementById("page");
+    const title = document.getElementById("view-name");
+    const shell = document.getElementById("player-shell");
+    if (!page || !title) return;
+    if (shell) shell.hidden = true;
+    page.hidden = false;
+    document.getElementById("catalogue-status").textContent = "Recovery mode";
+    function show(view) {
+      const item = views[view] || views.home;
+      title.textContent = item[0];
+      page.innerHTML = '<div class="page-heading"><div><p class="kicker">SUNSETOS RECOVERY</p><h1>' + item[1] + '</h1><p>' + item[2] + '</p></div></div><section class="settings-card"><h2>What happened?</h2><p>The main application script did not finish starting. This recovery screen keeps the navigation responsive instead of leaving a blank page. The Snubby catalogue outage is separate from the interface startup problem.</p><p>Reload the page after the application script has been repaired.</p></section>';
+      document.querySelectorAll(".nav-link[data-view]").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+    }
+    document.addEventListener("click", e => {
+      const button = e.target.closest(".nav-link[data-view]");
+      if (button && !window.__sunsetBooted) show(button.dataset.view);
+    }, true);
+    show("home");
+  }
+  window.addEventListener("error", () => { if (!window.__sunsetBooted) recover(); }, true);
+  window.addEventListener("unhandledrejection", () => { if (!window.__sunsetBooted) recover(); });
+  setTimeout(recover, 2500);
+})();
+</script></body></html>
