@@ -1,77 +1,46 @@
 "use strict";
 (() => {
-  if (sessionStorage.getItem("edustar_access") !== "granted") { location.replace("/signin/"); return; }
-  const CODE_KEY = "snubby_redesign_dev_code";
-  let devCode = sessionStorage.getItem(CODE_KEY);
-  if (!devCode) {
-    const bytes = new Uint8Array(5);
-    crypto.getRandomValues(bytes);
-    devCode = Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
-    sessionStorage.setItem(CODE_KEY, devCode);
-  }
-  // Console shortcut: type devmode = code.
-  Object.defineProperty(window, "code", { configurable: false, get: () => "code" });
-  Object.defineProperty(window, "devmode", { configurable: false, set(value) {
-    if (value === "code") {
-      console.info("%cSNUBBY DEV ACCESS", "font-weight:bold;color:#f4c542;font-size:14px");
-      console.info("Your session code: %c" + devCode, "font-weight:bold;color:#fff;font-size:18px;letter-spacing:2px");
-      console.info("Enter this code in the developer access prompt on this page.");
-    } else console.info("Unknown devmode command. Available command: devmode = code");
-  }});
-  const $ = (s, root=document) => root.querySelector(s);
-  const backdrop=$("#modal-backdrop"), modalContent=$("#modal-content"), modalActions=$("#modal-actions");
-  let guideStep=0;
-  const guide=[
-    ["A cleaner home","This is your redesigned home screen. Quick actions and important information are grouped into clear cards, instead of being spread around the screen."],
-    ["Find things in the sidebar","The left menu is where the main sections live. Home, Game library and Favourites will become the main ways to move around."],
-    ["Cleaner popups and buttons","Messages will use one consistent popup style, with clear actions and a close button. Important actions use the yellow primary button."],
-    ["You're ready","That's the first tour complete. You can open it again at any time using Quick guide in the sidebar."]
-  ];
-  function closeModal(){backdrop.hidden=true;modalContent.innerHTML="";modalActions.innerHTML=""}
-  function showModal(title,body,buttons=[{label:"Close",primary:true,action:closeModal}]){
-    modalContent.innerHTML='<h2 id="modal-title"></h2>'+body;$("#modal-title",modalContent).textContent=title;modalActions.innerHTML="";
-    buttons.forEach(item=>{const b=document.createElement("button");b.className="button "+(item.primary?"button-primary":"button-secondary");b.textContent=item.label;b.addEventListener("click",item.action||closeModal);modalActions.appendChild(b)});backdrop.hidden=false;
-  }
-  function toast(message){const n=document.createElement("div");n.className="toast";n.textContent=message;$("#toast-region").appendChild(n);setTimeout(()=>n.remove(),2600)}
-  function showGuide(){
-    const [title,description]=guide[guideStep],last=guideStep===guide.length-1;
-    showModal("Quick tour",'<span class="guide-step">STEP '+(guideStep+1)+' OF '+guide.length+'</span><h2>'+title+'</h2><p>'+description+'</p><div class="guide-progress"><span style="width:'+((guideStep+1)/guide.length*100)+'%"></span></div>',[
-      {label:guideStep===0?"Skip tour":"Close tour",primary:false,action:closeModal},
-      {label:last?"Finish":"Next →",primary:true,action:()=>{if(last){sessionStorage.setItem("snubby_redesign_toured","true");closeModal();toast("Tour completed.")}else{guideStep++;showGuide()}}}
-    ]);
-  }
-  function showSettings(){showModal("Preview settings",'<p>Settings will be added here as the redesign develops. Existing Snubby settings and saved data have not been changed.</p><label class="eyebrow" for="display-mode">DISPLAY MODE</label><select class="field" id="display-mode"><option>System default</option><option>Dark</option><option>Light (planned)</option></select>')}
-  function showDeveloperGate(){
-    showModal("Developer access",'<p>Enter the one-time code printed by the developer console command for this tab.</p><label class="eyebrow" for="dev-code-input">SESSION CODE</label><input class="field" id="dev-code-input" autocomplete="off" spellcheck="false" placeholder="Enter developer code">',[
-      {label:"Cancel",primary:false,action:closeModal},
-      {label:"Unlock",primary:true,action:()=>{const input=$("#dev-code-input");if(input&&input.value.trim().toUpperCase()===devCode){sessionStorage.setItem("snubby_redesign_dev_unlocked","true");closeModal();toast("Developer mode enabled for this tab.");document.body.classList.add("dev-unlocked");if(sessionStorage.getItem("snubby_redesign_toured")!=="true"){guideStep=0;showGuide()}}else{toast("That code is not correct for this session.");if(input)input.select()}}}
-    ]);$("#dev-code-input").focus();
-  }
-  function showView(view){
-    const labels={home:"Home",games:"Game library",favourites:"Favourites"};
-    document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
-    $("#current-view").textContent=labels[view]||"Home";
-    if(view==="games"){$("#page-title").textContent="Game library";$("#page-subtitle").textContent="The game catalogue connection is the next development step."}
-    else if(view==="favourites"){$("#page-title").textContent="Favourites";$("#page-subtitle").textContent="Your saved games will appear here once the library is connected."}
-    else{$("#page-title").textContent="Welcome back." ;$("#page-subtitle").textContent="A cleaner place to find and launch your games."}
-  }
-  document.addEventListener("click",event=>{
-    const b=event.target.closest("[data-action], [data-view]");if(!b)return;
-    if(b.dataset.view)showView(b.dataset.view);
-    const a=b.dataset.action;
-    if(a==="guide"){guideStep=0;showGuide()}
-    if(a==="settings")showSettings();
-    if(a==="about")showModal("What's changing?","<p>The redesign is starting with a cleaner layout, consistent buttons, simpler popups and a first-time guide. Game loading and the original game features will be connected after the interface foundation is ready.</p>");
-    if(a==="games")showView("games");
-    if(a==="original")location.href="/games/snubby/snubby/mathlesson1.html";
-    if(a==="profile")showModal("Developer session","<p>Developer access is active for this tab. The session code changes when you start a new browser session.</p>");
-  });
-  $(".close-modal").addEventListener("click",closeModal);
-  backdrop.addEventListener("click",e=>{if(e.target===backdrop)closeModal()});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!backdrop.hidden)closeModal()});
-  if(sessionStorage.getItem("snubby_redesign_dev_unlocked")==="true") document.body.classList.add("dev-unlocked");
-  else showDeveloperGate();
-  $("#today-label").textContent=new Date().toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}).toUpperCase();
-  if(sessionStorage.getItem("snubby_redesign_toured")!=="true" && sessionStorage.getItem("snubby_redesign_dev_unlocked")==="true"){guideStep=0;showGuide()}
-  console.info("Snubby redesign preview loaded. Developer command: devmode = code");
+ if(sessionStorage.getItem("edustar_access")!=="granted"){location.replace("/signin/");return;}
+ const CODE_KEY="snubby_redesign_dev_code";let devCode=sessionStorage.getItem(CODE_KEY);
+ if(!devCode){const bytes=new Uint8Array(5);crypto.getRandomValues(bytes);devCode=Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("").toUpperCase();sessionStorage.setItem(CODE_KEY,devCode);}
+ Object.defineProperty(window,"code",{configurable:false,get:()=>"code"});
+ Object.defineProperty(window,"devmode",{configurable:false,set(value){if(value==="code"){console.info("%cSNUBBY DEV ACCESS","font-weight:bold;color:#f4c542;font-size:14px");console.info("Your session code: %c"+devCode,"font-weight:bold;color:#fff;font-size:18px;letter-spacing:2px");}else console.info("Unknown devmode command. Available command: devmode = code");}});
+ const $=(s,r=document)=>r.querySelector(s),backdrop=$("#modal-backdrop"),modalContent=$("#modal-content"),modalActions=$("#modal-actions");
+ const games=[{id:"game1",name:"Featured Game",description:"A standalone game bundled with this site.",src:"/games/game1.html",category:"Featured",cover:"S"}];
+ let currentTour=0,activeGame=null;
+ const tour=[
+  {target:"[data-tour=home]",title:"Your home screen",text:"This is the home screen. Use the main button to jump straight to the game library."},
+  {target:".nav-item[data-view=games]",title:"Game library",text:"Open the library from here. You can search and sort the available games."},
+  {target:"[data-tour=search]",title:"Search and sort",text:"Type part of a game's name or change the sorting order."},
+  {target:"[data-tour=cards]",title:"Game cards",text:"Each card has a launch button and a favourite star. Your favourites are saved in this browser."},
+  {target:".nav-item[data-action=settings]",title:"Your settings",text:"Change the theme, card density, motion, launch confirmations and tutorial preferences here."}
+ ];
+ function closeModal(){backdrop.hidden=true;modalContent.innerHTML="";modalActions.innerHTML="";}
+ function showModal(title,body,buttons=[{label:"Close",primary:true,action:closeModal}]){modalContent.innerHTML='<h2 id="modal-title"></h2>'+body;$("#modal-title",modalContent).textContent=title;modalActions.innerHTML="";buttons.forEach(item=>{const b=document.createElement("button");b.className="button "+(item.primary?"button-primary":"button-secondary");b.textContent=item.label;b.addEventListener("click",item.action||closeModal);modalActions.appendChild(b)});backdrop.hidden=false;}
+ function toast(message){const n=document.createElement("div");n.className="toast";n.textContent=message;$("#toast-region").appendChild(n);setTimeout(()=>n.remove(),2600);}
+ function settings(){const s=readSettings();showModal("Settings",'<p>These preferences are stored locally in this browser.</p><div class="setting-row"><div><strong>Theme</strong><small>Choose the interface appearance.</small></div><select class="field" id="pref-theme"><option value="dark">Dark</option><option value="light">Light</option></select></div><div class="setting-row"><div><strong>Compact game cards</strong><small>Use smaller game covers.</small></div><input id="pref-compact" type="checkbox"></div><div class="setting-row"><div><strong>Reduce motion</strong><small>Turn off most interface animations.</small></div><input id="pref-motion" type="checkbox"></div><div class="setting-row"><div><strong>Confirm before launching</strong><small>Ask before opening a game.</small></div><input id="pref-confirm" type="checkbox"></div><div class="setting-row"><div><strong>Show tutorial automatically</strong><small>Offer the tour on the next new session.</small></div><input id="pref-tour" type="checkbox"></div><div class="setting-row"><div><strong>Game sorting</strong><small>Default order for the library.</small></div><select class="field" id="pref-sort"><option value="name">Name</option><option value="recent">Recently played</option><option value="favourite">Favourites first</option></select></div>',[{label:"Reset",primary:false,action:()=>{localStorage.removeItem("snubby_redesign_settings");applySettings();closeModal();toast("Settings reset.")}},{label:"Save settings",primary:true,action:()=>{saveSettings({theme:$("#pref-theme").value,compact:$("#pref-compact").checked,motion:$("#pref-motion").checked,confirm:$("#pref-confirm").checked,tour:$("#pref-tour").checked,sort:$("#pref-sort").value});closeModal();toast("Settings saved.")}}]);$("#pref-theme").value=s.theme;$("#pref-compact").checked=s.compact;$("#pref-motion").checked=s.motion;$("#pref-confirm").checked=s.confirm;$("#pref-tour").checked=s.tour;$("#pref-sort").value=s.sort;}
+ function readSettings(){try{return {...{theme:"dark",compact:false,motion:false,confirm:true,tour:true,sort:"name"},...JSON.parse(localStorage.getItem("snubby_redesign_settings")||"{}")}}catch{return {theme:"dark",compact:false,motion:false,confirm:true,tour:true,sort:"name"}}}
+ function saveSettings(s){localStorage.setItem("snubby_redesign_settings",JSON.stringify(s));applySettings();}
+ function applySettings(){const s=readSettings();document.body.classList.toggle("light-theme",s.theme==="light");document.body.classList.toggle("compact",!!s.compact);document.body.classList.toggle("reduce-motion",!!s.motion);$("#game-sort").value=s.sort;renderGames();}
+ function favourites(){try{return JSON.parse(localStorage.getItem("snubby_redesign_favourites")||"[]")}catch{return []}}
+ function recent(){try{return JSON.parse(localStorage.getItem("snubby_redesign_recent")||"[]")}catch{return []}}
+ function renderGames(mode="all"){const grid=$("#game-grid");grid.innerHTML="";let list=[...games],fav=favourites(),rec=recent(),q=$("#game-search").value.trim().toLowerCase(),sort=$("#game-sort").value;
+ if(mode==="favourites")list=list.filter(g=>fav.includes(g.id));if(mode==="recent")list=list.filter(g=>rec.includes(g.id));if(q)list=list.filter(g=>(g.name+" "+g.description).toLowerCase().includes(q));
+ if(sort==="recent")list.sort((a,b)=>rec.indexOf(a.id)-rec.indexOf(b.id));else if(sort==="favourite")list.sort((a,b)=>fav.includes(b.id)-fav.includes(a.id));else list.sort((a,b)=>a.name.localeCompare(b.name));
+ if(!list.length){grid.innerHTML='<div class="empty-state">No games found here yet.</div>';return;}
+ list.forEach(g=>{const card=document.createElement("article");card.className="game-card";const cover=document.createElement("div");cover.className="game-cover";cover.textContent="";const info=document.createElement("div");info.className="game-info";const h=document.createElement("h3");h.textContent=g.name;const p=document.createElement("p");p.textContent=g.description;const meta=document.createElement("div");meta.className="game-meta";const category=document.createElement("span");category.className="eyebrow";category.textContent=g.category;const actions=document.createElement("div");actions.className="game-actions";const star=document.createElement("button");star.className="small-button fav";star.textContent=fav.includes(g.id)?"★":"☆";star.title="Toggle favourite";star.addEventListener("click",()=>{const next=favourites();const i=next.indexOf(g.id);if(i>=0)next.splice(i,1);else next.push(g.id);localStorage.setItem("snubby_redesign_favourites",JSON.stringify(next));renderGames(mode)});const launch=document.createElement("button");launch.className="small-button primary";launch.textContent="Play →";launch.addEventListener("click",()=>launchGame(g));actions.append(star,launch);meta.append(category,actions);info.append(h,p,meta);card.append(cover,info);grid.append(card);});}
+ function showView(view){const labels={home:"Home",games:"Game library",favourites:"Favourites",recent:"Recently played"};document.querySelectorAll(".nav-item[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));$("#current-view").textContent=labels[view]||"Home";$("#page-title").textContent=view==="home"?"Welcome back.":labels[view];$("#page-subtitle").textContent=view==="home"?"Your games, favourites and preferences in one place.":view==="favourites"?"The games you have starred.":view==="recent"?"Games you have launched recently.":"Browse and launch available games.";$("#game-viewer").hidden=true;$("#game-grid").hidden=false;$("#game-search").hidden=view!=="games";$("#game-sort").hidden=view!=="games";$("#game-grid").hidden=view==="home";if(view==="home"){$("#game-grid").hidden=false;renderGames("all")}else renderGames(view);if(view==="home")$("#game-search").value="";}
+ function launchGame(game){const s=readSettings();if(s.confirm&&!confirm("Launch "+game.name+"?"))return;activeGame=game;$("#viewer-title").textContent=game.name;$("#game-frame").src=game.src;$("#game-viewer").hidden=false;$("#game-grid").hidden=true;$("#game-search").hidden=true;$("#game-sort").hidden=true;const r=recent().filter(id=>id!==game.id);r.unshift(game.id);localStorage.setItem("snubby_redesign_recent",JSON.stringify(r.slice(0,12)));$("#game-viewer").scrollIntoView({behavior:readSettings().motion?"auto":"smooth",block:"start"});}
+ function closeGame(){const frame=$("#game-frame");frame.src="about:blank";$("#game-viewer").hidden=true;$("#game-grid").hidden=false;$("#game-search").hidden=false;$("#game-sort").hidden=false;activeGame=null;}
+ function clearTour(){document.querySelectorAll(".tour-focus").forEach(x=>x.classList.remove("tour-focus"));$("#tour-card").hidden=true;$("#tour-dimmer").hidden=true;}
+ function showTour(){clearTour();const step=tour[currentTour];const target=$(step.target);if(target){target.classList.add("tour-focus");target.scrollIntoView({behavior:"smooth",block:"center"});}$("#tour-title").textContent=step.title;$("#tour-description").textContent=step.text;$("#tour-count").textContent="STEP "+(currentTour+1)+" OF "+tour.length;$("#tour-progress").style.width=((currentTour+1)/tour.length*100)+"%";$("#tour-card").hidden=false;$("#tour-dimmer").hidden=false;const back=$('[data-action="tour-back"]');back.disabled=currentTour===0;back.style.opacity=currentTour===0?".45":"1";$('[data-action="tour-next"]').textContent=currentTour===tour.length-1?"Finish":"Next →";}
+ function startTour(){currentTour=0;showTour();}
+ function finishTour(){clearTour();sessionStorage.setItem("snubby_redesign_toured","true");toast("Tour completed.");}
+ function gate(){showModal("Developer access",'<p>Enter the session code printed in the developer console.</p><label class="eyebrow" for="dev-code-input">SESSION CODE</label><input class="field" id="dev-code-input" autocomplete="off" spellcheck="false" placeholder="Enter developer code">',[{label:"Unlock",primary:true,action:()=>{const input=$("#dev-code-input");if(input.value.trim().toUpperCase()===devCode){sessionStorage.setItem("snubby_redesign_dev_unlocked","true");closeModal();document.body.classList.add("dev-unlocked");toast("Developer mode enabled.");if(readSettings().tour)startTour();}else{toast("Incorrect code.");input.select();}}}]);$("#dev-code-input").focus();}
+ document.addEventListener("click",e=>{const b=e.target.closest("[data-action],[data-view]");if(!b)return;if(b.dataset.view){showView(b.dataset.view);return;}switch(b.dataset.action){case"home":showView("home");break;case"browse":showView("games");break;case"guide":startTour();break;case"settings":settings();break;case"about":showModal("About this redesign","<p>This is a separate interface preview. The existing maths page and its files remain unchanged.</p>");break;case"profile":showModal("Developer session","<p>Developer access is active for this browser tab. This front-end gate is only a preview feature, not secure authentication.</p>");break;case"tour-next":if(currentTour===tour.length-1)finishTour();else{currentTour++;showTour();}break;case"tour-back":if(currentTour>0){currentTour--;showTour();}break;case"skip-tour":finishTour();break;case"close-game":closeGame();break;case"reload-game":if(activeGame)$("#game-frame").contentWindow.location.reload();break;}});
+ $("#game-search").addEventListener("input",()=>renderGames($("#current-view").textContent==="Favourites"?"favourites":$("#current-view").textContent==="Recently played"?"recent":"all"));$("#game-sort").addEventListener("change",()=>{const s=readSettings();s.sort=$("#game-sort").value;localStorage.setItem("snubby_redesign_settings",JSON.stringify(s));renderGames();});
+ $(".close-modal").addEventListener("click",closeModal);backdrop.addEventListener("click",e=>{if(e.target===backdrop)closeModal()});document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("#tour-card").hidden)finishTour();else if(!backdrop.hidden)closeModal();}});
+ applySettings();$("#today-label").textContent=new Date().toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}).toUpperCase();
+ if(sessionStorage.getItem("snubby_redesign_dev_unlocked")==="true"){document.body.classList.add("dev-unlocked");if(readSettings().tour&&sessionStorage.getItem("snubby_redesign_toured")!=="true")startTour();}else gate();
+ console.info("Snubby library loaded. Developer command: devmode = code");
 })();
