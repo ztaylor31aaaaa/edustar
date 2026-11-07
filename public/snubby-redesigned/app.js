@@ -53,7 +53,7 @@
     $("#current-view").textContent=labels[view]||"Home";
     if(view==="games"){$("#page-title").textContent="Game library";$("#page-subtitle").textContent="The game catalogue connection is the next development step."}
     else if(view==="favourites"){$("#page-title").textContent="Favourites";$("#page-subtitle").textContent="Your saved games will appear here once the library is connected."}
-    else{$("#page-title").textContent="Welcome back."=$("#page-title").textContent;$("#page-title").textContent="Welcome back." ;$("#page-subtitle").textContent="A cleaner place to find and launch your games."}
+    else{$("#page-title").textContent="Welcome back." ;$("#page-subtitle").textContent="A cleaner place to find and launch your games."}
   }
   document.addEventListener("click",event=>{
     const b=event.target.closest("[data-action], [data-view]");if(!b)return;
@@ -64,13 +64,14 @@
     if(a==="about")showModal("What's changing?","<p>The redesign is starting with a cleaner layout, consistent buttons, simpler popups and a first-time guide. Game loading and the original game features will be connected after the interface foundation is ready.</p>");
     if(a==="games")showView("games");
     if(a==="original")location.href="/games/snubby/snubby/mathlesson1.html";
-    if(a==="profile")showDeveloperGate();
+    if(a==="profile")showModal("Developer session","<p>Developer access is active for this tab. The session code changes when you start a new browser session.</p>");
   });
   $(".close-modal").addEventListener("click",closeModal);
   backdrop.addEventListener("click",e=>{if(e.target===backdrop)closeModal()});
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!backdrop.hidden)closeModal()});
-  if(sessionStorage.getItem("snubby_redesign_dev_unlocked")==="true")document.body.classList.add("dev-unlocked");
+  if(sessionStorage.getItem("snubby_redesign_dev_unlocked")==="true") document.body.classList.add("dev-unlocked");
+  else showDeveloperGate();
   $("#today-label").textContent=new Date().toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}).toUpperCase();
-  if(sessionStorage.getItem("snubby_redesign_toured")!=="true"){guideStep=0;showGuide()}
+  if(sessionStorage.getItem("snubby_redesign_toured")!=="true" && sessionStorage.getItem("snubby_redesign_dev_unlocked")==="true"){guideStep=0;showGuide()}
   console.info("Snubby redesign preview loaded. Developer command: devmode = code");
 })();
