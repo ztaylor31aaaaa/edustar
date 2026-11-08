@@ -1,5 +1,5 @@
 "use strict";
-(()=>{const ACCESS="edustar_access";if(sessionStorage.getItem(ACCESS)!=="granted"){location.replace("/signin/");return;}
+(()=>{const ACCESS="sunsetos_access";if(sessionStorage.getItem(ACCESS)!=="granted"){location.replace("/signin/");return;}
 const $=s=>document.querySelector(s),page=$("#page"),shell=$("#player-shell"),modal=$("#modal-layer"),body=$("#modal-body"),footer=$("#modal-footer");const frameStage=$("#player-stage"),runningTabs=$("#running-game-tabs");let frame=null,sessions=[],activeSessionId=null;
 
 let games=[],activeGame=null,currentView="home",playStarted=0,tick=null;const CATALOGUE="https://sme-library.global.ssl.fastly.net/data/games.json",CDN_ROOT="https://sme-library.global.ssl.fastly.net/";
