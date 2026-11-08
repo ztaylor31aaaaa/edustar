@@ -1,6 +1,13 @@
 "use strict";
 
 const ACCESS_KEY = "edustar_access";
+const SUNSET_ACCESS_KEY = "sunsetos_access";
+const GAME_ACCESS_CODE = "stupidlyakward";
+
+// A fresh 10-character code is created for this browser tab's current page session.
+// In the browser console, run: devmode = code
+var code = Array.from(crypto.getRandomValues(new Uint8Array(5)), value => value.toString(16).padStart(2, "0")).join("");
+var devmode = false;
 
 const GAME_PATHS = {
   game1: "/games/snubby/snubby/mathlesson1.html"
@@ -27,43 +34,44 @@ function isLocalGameUrl(value) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const accessForm = document.getElementById("access-form");
+  const card = document.querySelector(".signin-card");
 
-  const originalPortal = document.getElementById("original-portal");
-  if (originalPortal) originalPortal.addEventListener("click", () => location.assign("/play/?game=game1"));
+  function showChoices() {
+    card.innerHTML = '<p class="signin-eyebrow">GAME ACCESS GRANTED</p><h1>Choose your experience.</h1><p class="signin-description">Your normal game access is active. SunsetOS requires an additional developer code.</p><div class="signin-choice-grid"><button class="signin-choice" type="button" id="original-portal"><strong>Original game portal</strong><span>Open the original Snubby games →</span></button><button class="signin-choice" type="button" id="sunsetos-choice"><strong>SunsetOS</strong><span>Enter the separate developer code →</span></button></div><a class="signin-home-link" href="/">← Back to home</a>';
+    card.querySelector("#original-portal").addEventListener("click", () => location.assign("/play/?game=game1"));
+    card.querySelector("#sunsetos-choice").addEventListener("click", showSunsetCodeForm);
+  }
 
-  if (accessForm) {
-    accessForm.addEventListener("submit", async event => {
+  function showSunsetCodeForm() {
+    card.innerHTML = '<p class="signin-eyebrow">SUNSETOS DEVELOPER ACCESS</p><h1>Developer mode.</h1><p class="signin-description">In the browser console, run <code>devmode = code</code>, then enter the code printed by the console.</p><form id="sunset-code-form" class="signin-form"><label for="sunset-code">Temporary developer code</label><input id="sunset-code" type="password" placeholder="Enter the 10-character code" autocomplete="off" required><p id="sunset-error" class="signin-error" role="alert" hidden>Invalid code. Run <code>devmode = code</code> in the console for this session.</p><button class="signin-submit" type="submit">Unlock SunsetOS <span aria-hidden="true">→</span></button></form><a class="signin-home-link" href="#" id="back-choices">← Back to experiences</a>';
+    card.querySelector("#back-choices").addEventListener("click", event => { event.preventDefault(); showChoices(); });
+    card.querySelector("#sunset-code-form").addEventListener("submit", event => {
       event.preventDefault();
-      const input = document.getElementById("access-code");
-      const error = document.getElementById("access-error");
-
-      const code = input.value.trim();
-      const submit = accessForm.querySelector("button[type=submit]");
-      submit.disabled = true;
-      submit.textContent = "Checking…";
-      let accepted = false;
-      try {
-        const response = await fetch("/api/dev-verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code })
-        });
-        accepted = response.ok;
-      } catch {}
-      submit.disabled = false;
-      submit.innerHTML = 'Continue <span aria-hidden="true">→</span>';
-      if (!accepted) {
-        error.textContent = "That developer code is invalid or has expired.";
+      const input = card.querySelector("#sunset-code");
+      const error = card.querySelector("#sunset-error");
+      if (devmode !== code || input.value.trim().toLowerCase() !== devmode) {
         error.hidden = false;
         input.select();
         return;
       }
+      sessionStorage.setItem(SUNSET_ACCESS_KEY, "granted");
+      location.assign("/arcade/");
+    });
+  }
 
+  if (accessForm) {
+    accessForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const input = document.getElementById("access-code");
+      const error = document.getElementById("access-error");
+      if (input.value !== GAME_ACCESS_CODE) {
+        error.hidden = false;
+        input.select();
+        return;
+      }
       error.hidden = true;
       grantAccess();
-      const card = document.querySelector(".signin-card");
-      card.innerHTML = '<p class="signin-eyebrow">SUNSETOS UNLOCKED</p><h1>Access granted.</h1><p class="signin-description">Your developer session is active for SunsetOS.</p><button class="signin-choice" type="button" id="open-sunsetos"><strong>Open SunsetOS</strong><span>Launch the updated game hub →</span></button><a class="signin-home-link" href="/">← Back to home</a>';
-      card.querySelector("#open-sunsetos").addEventListener("click", () => location.assign("/arcade/"));
+      showChoices();
     });
   }
 
@@ -74,6 +82,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const frame = document.getElementById("game-frame");
   if (!frame) return;
+
+  if (!hasAccess()) {
+    location.replace("/signin/");
+    return;
+  }
 
   const params = new URLSearchParams(location.search);
   const game = params.get("game") || "game1";
