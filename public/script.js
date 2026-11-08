@@ -23,6 +23,9 @@ function hasAccess() {
 
 function grantAccess() {
   sessionStorage.setItem(ACCESS_KEY, "granted");
+  // This session-only launch code is passed to the two maintenance activity pages.
+  const launchCode = Array.from(crypto.getRandomValues(new Uint8Array(24)), value => value.toString(16).padStart(2, "0")).join("");
+  sessionStorage.setItem("sunset_activity_launchcode", launchCode);
 }
 
 function isLocalGameUrl(value) {
