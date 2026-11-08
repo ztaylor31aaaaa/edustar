@@ -43,11 +43,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       error.hidden = true;
       grantAccess();
-      location.href = "/choose/";
+      const card = document.querySelector(".signin-card");
+      card.innerHTML = '<p class="signin-eyebrow">ACCESS GRANTED</p><h1>Choose your experience.</h1><p class="signin-description">Select where you want to go.</p><div class="signin-choice-grid"><button class="signin-choice" type="button" data-destination="/play/?game=game1"><strong>Original game portal</strong><span>Open the original Snubby experience →</span></button><button class="signin-choice" type="button" data-destination="/arcade/"><strong>SunsetOS</strong><span>Open the updated game hub →</span></button></div><a class="signin-home-link" href="/">← Back to home</a>';
+      card.querySelectorAll("[data-destination]").forEach(button => button.addEventListener("click", () => {
+        const destination = button.dataset.destination;
+        if (destination === "/play/?game=game1" || destination === "/arcade/") location.assign(destination);
+      }));
     });
   }
 
-  if (document.body.classList.contains("choose-page") && !hasAccess()) {
+  if (document.body.classList.contains("choose-page")) {
     location.replace("/signin/");
     return;
   }
