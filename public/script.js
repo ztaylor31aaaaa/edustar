@@ -28,6 +28,9 @@ function isLocalGameUrl(value) {
 document.addEventListener("DOMContentLoaded", () => {
   const accessForm = document.getElementById("access-form");
 
+  const originalPortal = document.getElementById("original-portal");
+  if (originalPortal) originalPortal.addEventListener("click", () => location.assign("/play/?game=game1"));
+
   if (accessForm) {
     accessForm.addEventListener("submit", async event => {
       event.preventDefault();
@@ -59,11 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
       error.hidden = true;
       grantAccess();
       const card = document.querySelector(".signin-card");
-      card.innerHTML = '<p class="signin-eyebrow">ACCESS GRANTED</p><h1>Choose your experience.</h1><p class="signin-description">Select where you want to go.</p><div class="signin-choice-grid"><button class="signin-choice" type="button" data-destination="/play/?game=game1"><strong>Original game portal</strong><span>Open the original Snubby experience →</span></button><button class="signin-choice" type="button" data-destination="/arcade/"><strong>SunsetOS</strong><span>Open the updated game hub →</span></button></div><a class="signin-home-link" href="/">← Back to home</a>';
-      card.querySelectorAll("[data-destination]").forEach(button => button.addEventListener("click", () => {
-        const destination = button.dataset.destination;
-        if (destination === "/play/?game=game1" || destination === "/arcade/") location.assign(destination);
-      }));
+      card.innerHTML = '<p class="signin-eyebrow">SUNSETOS UNLOCKED</p><h1>Access granted.</h1><p class="signin-description">Your developer session is active for SunsetOS.</p><button class="signin-choice" type="button" id="open-sunsetos"><strong>Open SunsetOS</strong><span>Launch the updated game hub →</span></button><a class="signin-home-link" href="/">← Back to home</a>';
+      card.querySelector("#open-sunsetos").addEventListener("click", () => location.assign("/arcade/"));
     });
   }
 
@@ -74,11 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const frame = document.getElementById("game-frame");
   if (!frame) return;
-
-  if (!hasAccess()) {
-    location.replace("/signin/");
-    return;
-  }
 
   const params = new URLSearchParams(location.search);
   const game = params.get("game") || "game1";
