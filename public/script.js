@@ -1,7 +1,6 @@
 "use strict";
 
 const ACCESS_KEY = "edustar_access";
-const ACCESS_CODE = "stupidlyakward";
 
 const GAME_PATHS = {
   game1: "/games/snubby/snubby/mathlesson1.html"
@@ -30,12 +29,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const accessForm = document.getElementById("access-form");
 
   if (accessForm) {
-    accessForm.addEventListener("submit", event => {
+    accessForm.addEventListener("submit", async event => {
       event.preventDefault();
       const input = document.getElementById("access-code");
       const error = document.getElementById("access-error");
 
-      if (input.value !== ACCESS_CODE) {
+      const code = input.value.trim();
+      const submit = accessForm.querySelector("button[type=submit]");
+      submit.disabled = true;
+      submit.textContent = "Checking…";
+      let accepted = false;
+      try {
+        const response = await fetch("/api/dev-verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code })
+        });
+        accepted = response.ok;
+      } catch {}
+      submit.disabled = false;
+      submit.innerHTML = 'Continue <span aria-hidden="true">→</span>';
+      if (!accepted) {
+        error.textContent = "That developer code is invalid or has expired.";
         error.hidden = false;
         input.select();
         return;
