@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showChoices() {
     card.innerHTML = '<p class="signin-eyebrow">GAME ACCESS GRANTED</p><h1>Choose your experience.</h1><p class="signin-description">Your normal game access is active. SunsetOS requires an additional developer code.</p><div class="signin-choice-grid"><button class="signin-choice" type="button" id="original-portal"><strong>Original game portal</strong><span>Open the original Snubby games →</span></button><button class="signin-choice" type="button" id="sunsetos-choice"><strong>SunsetOS</strong><span>Enter the separate developer code →</span></button></div><a class="signin-home-link" href="/">← Back to home</a>';
-    card.querySelector("#original-portal").addEventListener("click", () => location.assign("/play/?game=game1"));
+    card.querySelector("#original-portal").addEventListener("click", () => location.assign("/play/?game=game1#launchcode=" + encodeURIComponent(sessionStorage.getItem("sunset_activity_launchcode") || "")));
     card.querySelector("#sunsetos-choice").addEventListener("click", showSunsetCodeForm);
   }
 
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       sessionStorage.setItem(SUNSET_ACCESS_KEY, "granted");
-      location.assign("/arcade/");
+      location.assign("/arcade/#launchcode=" + encodeURIComponent(sessionStorage.getItem("sunset_activity_launchcode") || ""));
     });
   }
 
@@ -90,8 +90,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const frame = document.getElementById("game-frame");
   if (!frame) return;
 
-  if (!hasAccess()) {
-    location.replace("/signin/");
+  const launchParams = new URLSearchParams(location.hash.slice(1));
+  const suppliedLaunchCode = launchParams.get("launchcode") || "";
+  const expectedLaunchCode = sessionStorage.getItem("sunset_activity_launchcode") || "";
+  history.replaceState(null, "", location.pathname + location.search);
+  if (!hasAccess() || !suppliedLaunchCode || !expectedLaunchCode || suppliedLaunchCode !== expectedLaunchCode) {
+    document.body.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#fffdf5;color:#242018;font-family:Arial,sans-serif"><section style="max-width:560px;padding:32px;border:1px solid #e7dfca;border-radius:16px;background:#fff"><p style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:#a77b00">ACCELERATE MY EDUCATION · ACCESS CHECK</p><h1>Activity unavailable</h1><p>This page can only be opened through the sign-in launch process. Open the sign-in page and choose the original game portal.</p><a href="/signin/" style="color:#9b7300;font-weight:700">Return to sign in →</a></section></main>';
     return;
   }
 
