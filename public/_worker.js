@@ -16,10 +16,10 @@ export default {
       for (let i = 0; i < Math.max(a.length, b.length); i++) diff |= (a[i] || 0) ^ (b[i] || 0);
       if (diff !== 0) return Response.json({ error: "Developer authentication failed." }, { status: 401 });
       const payload = { iat: Date.now(), exp: Date.now() + 5 * 60 * 1000, nonce: Array.from(crypto.getRandomValues(new Uint8Array(18)), x => x.toString(16).padStart(2, "0")).join("") };
-      const body = btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(payload)))).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/g, "");
+      const body = btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(payload)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
       const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(expected), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
       const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body)));
-      const signature = btoa(String.fromCharCode(...sig)).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/g, "");
+      const signature = btoa(String.fromCharCode(...sig)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
       return Response.json({ code: body + "." + signature, expiresIn: 300 }, { headers: { "Cache-Control": "no-store" } });
     }
 
