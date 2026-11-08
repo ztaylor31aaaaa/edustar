@@ -1,19 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>
-(() => {
-  const params = new URLSearchParams(location.hash.slice(1));
-  const supplied = params.get("launchcode") || "";
-  const expected = sessionStorage.getItem("sunset_activity_launchcode") || "";
-  const allowed = sessionStorage.getItem("edustar_access") === "granted" && supplied && expected && supplied === expected;
-  if (!allowed) {
-    document.documentElement.innerHTML = '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Activity unavailable | Accelerate My Education</title></head><body style="margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;box-sizing:border-box;background:#fffdf5;color:#242018;font-family:Arial,sans-serif"><main style="max-width:560px;padding:32px;border:1px solid #e7dfca;border-radius:16px;background:#fff"><p style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:#a77b00">ACCELERATE MY EDUCATION · REVISION · ACTIVITY 6</p><h1>Activity unavailable</h1><p>This activity can only be opened through the sign-in launch process. Return to sign in and launch the game from there.</p><a href="/signin/" style="color:#9b7300;font-weight:700">Return to sign in →</a></main></body>';
-    return;
-  }
-  location.replace("/arcade/" + "#launchcode=" + encodeURIComponent(supplied));
-})();
-</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Revision | Accelerate My Education</title>
