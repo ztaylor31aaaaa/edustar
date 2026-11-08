@@ -24,20 +24,12 @@
     <section class="signin-card">
       <p class="signin-eyebrow">STUDENT ACCESS</p>
       <h1>Welcome back.</h1>
-      <p class="signin-description">Choose the original game portal, or enter your developer code to unlock SunsetOS.</p><div class="signin-choice-grid" style="margin-bottom:24px"><button class="signin-choice" type="button" id="original-portal"><strong>Original game portal</strong><span>Open the original Snubby games without a developer code →</span></button></div>
+      <p class="signin-description">Enter your normal game access code to continue. SunsetOS has a separate developer-code step.</p>
 
       <form id="access-form" class="signin-form">
-        <label for="access-code">SunsetOS developer code</label>
-        <input
-          id="access-code"
-          type="password"
-          placeholder="Paste your developer code"
-          autocomplete="current-password"
-          required
-        >
-        <p id="access-error" class="signin-error" role="alert" hidden>
-          That code wasn't recognised. Try again.
-        </p>
+        <label for="access-code">Game access code</label>
+        <input id="access-code" type="password" placeholder="Enter your game access code" autocomplete="current-password" required>
+        <p id="access-error" class="signin-error" role="alert" hidden>That code wasn't recognised. Try again.</p>
         <button class="signin-submit" type="submit">Continue <span aria-hidden="true">→</span></button>
       </form>
 
