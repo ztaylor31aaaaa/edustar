@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffc928">
+  <title>Revision Arcade | SunsetOS</title>
+  <link rel="stylesheet" href="/arcade/style.css">
+  <style>
+    .activity-page{width:min(820px,calc(100% - 40px));margin:10vh auto;padding:0 0 60px}
+    .activity-panel{background:linear-gradient(145deg,#211d16,#19160f);border:1px solid #403625;border-radius:18px;padding:clamp(24px,5vw,42px);box-shadow:0 20px 60px #0006}
+    .activity-panel h1{font-size:clamp(30px,5vw,44px);margin:8px 0 12px;letter-spacing:-1.4px}
+    .activity-panel p{color:#b6a98f;line-height:1.7;font-size:13px}
+    .activity-top{display:flex;align-items:center;gap:12px;margin-bottom:30px;color:#fff8e9;font-weight:800;font-size:20px}
+    .activity-status{display:inline-flex;padding:7px 11px;border:1px solid #6b531e;border-radius:20px;color:#ffe18a;background:#3b2b0d;font-size:10px;font-weight:800;letter-spacing:1px}
+    .activity-actions{margin-top:24px;display:flex;gap:10px;flex-wrap:wrap}
+    .activity-actions a{color:inherit;text-decoration:none}
+  </style>
+</head>
+<body>
+  <main class="activity-page">
+    <div class="activity-top"><span class="brand-icon">☀</span> sunset<span style="color:#ffc928;font-weight:500">OS</span></div>
+    <section class="activity-panel" id="activity-panel">
+      <p class="kicker">ACTIVITY ACCESS</p>
+      <h1>Checking launch code…</h1>
+      <p>Please wait while SunsetOS checks this activity session.</p>
+    </section>
+  </main>
+  <script>
+  (() => {
+    const panel = document.getElementById("activity-panel");
+    const params = new URLSearchParams(location.hash.slice(1));
+    const supplied = params.get("launchcode") || "";
+    const expected = sessionStorage.getItem("sunset_activity_launchcode") || "";
+    const signedIn = sessionStorage.getItem("edustar_access") === "granted";
+    const sunsetReady = sessionStorage.getItem("sunsetos_access") === "granted";
+    history.replaceState(null, "", location.pathname);
+    if (!supplied || !expected || supplied !== expected || !signedIn || !sunsetReady) {
+      panel.innerHTML = '<p class="kicker">SUNSETOS · ACCESS CHECK</p><span class="activity-status">UNAVAILABLE</span><h1>Activity unavailable.</h1><p>This activity can only be opened from an authorised SunsetOS session. Return to the sign-in page and enter through the normal launch process.</p><div class="activity-actions"><a class="button primary" href="/signin/">Return to sign in →</a><a class="button secondary" href="/arcade/">Back to SunsetOS</a></div>';
+      return;
+    }
+    panel.innerHTML = '<p class="kicker">SUNSETOS · REVISION ARCADE</p><span class="activity-status">IN MAINTENANCE</span><h1>Revision Arcade</h1><p>Revision Arcade is currently being updated. Please return to the SunsetOS home page and check again later.</p><div class="activity-actions"><a class="button primary" href="/arcade/">Return to SunsetOS →</a></div>';
+  })();
+  </script>
+</body>
+</html>
