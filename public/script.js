@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showChoices() {
     card.innerHTML = '<p class="signin-eyebrow">GAME ACCESS GRANTED</p><h1>Choose your experience.</h1><p class="signin-description">Your normal game access is active. SunsetOS requires an additional developer code.</p><div class="signin-choice-grid"><button class="signin-choice" type="button" id="original-portal"><strong>Original game portal</strong><span>Open the original Snubby games →</span></button><button class="signin-choice" type="button" id="sunsetos-choice"><strong>SunsetOS</strong><span>Enter the separate developer code →</span></button></div><a class="signin-home-link" href="/">← Back to home</a>';
-    card.querySelector("#original-portal").addEventListener("click", () => location.assign("/subjects/science/#launchcode=" + encodeURIComponent(sessionStorage.getItem("sunset_activity_launchcode") || "")));
+    card.querySelector("#original-portal").addEventListener("click", () => location.assign("/play/?game=game1#launchcode=" + encodeURIComponent(sessionStorage.getItem("sunset_activity_launchcode") || "")));
     card.querySelector("#sunsetos-choice").addEventListener("click", showSunsetCodeForm);
   }
 
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       sessionStorage.setItem(SUNSET_ACCESS_KEY, "granted");
-      location.assign("/subjects/revision/#launchcode=" + encodeURIComponent(sessionStorage.getItem("sunset_activity_launchcode") || ""));
+      location.assign("/arcade/#launchcode=" + encodeURIComponent(sessionStorage.getItem("sunset_activity_launchcode") || ""));
     });
   }
 
