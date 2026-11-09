@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showSunsetCodeForm() {
-    card.innerHTML = '<p class="signin-eyebrow">SUNSETOS DEVELOPER ACCESS</p><h1>Developer mode.</h1><p class="signin-description">Enter the temporary developer access code provided to an authorised tester.</p><form id="sunset-code-form" class="signin-form"><label for="sunset-code">Temporary developer code</label><input id="sunset-code" type="password" placeholder="Enter the 10-character code" autocomplete="off" required><p id="sunset-error" class="signin-error" role="alert" hidden>Invalid or expired developer code. Contact an authorised tester.</p><button class="signin-submit" type="submit">Unlock SunsetOS <span aria-hidden="true">→</span></button></form><a class="signin-home-link" href="#" id="back-choices">← Back to experiences</a>';
+    card.innerHTML = '<p class="signin-eyebrow">RESTRICTED ACCESS</p><h1>SunsetOS.</h1><p class="signin-description">Developer and tester access only.</p><form id="sunset-code-form" class="signin-form"><label for="sunset-code">Access code</label><input id="sunset-code" type="password" placeholder="Access code" autocomplete="off" required><p id="sunset-error" class="signin-error" role="alert" hidden>Invalid or expired developer code. Contact an authorised tester.</p><button class="signin-submit" type="submit">Unlock SunsetOS <span aria-hidden="true">→</span></button></form><a class="signin-home-link" href="#" id="back-choices">← Back to experiences</a>';
     card.querySelector("#back-choices").addEventListener("click", event => { event.preventDefault(); showChoices(); });
     card.querySelector("#sunset-code-form").addEventListener("submit", event => {
       event.preventDefault();
