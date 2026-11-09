@@ -523,3 +523,27 @@ body.nav-bottom .player-shell{top:68px!important;left:0!important;bottom:64px!im
  body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .running-games{display:none!important}
 }
 body.game-active .theme-toggle{display:none!important}
+
+
+/* Changelog typography: keep dates, categories and entry titles visually separate. */
+.changelog-list{display:grid;gap:16px;margin:22px 0 42px}
+.changelog-entry{padding:22px 24px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:0 8px 24px #0000000a;animation:changelog-enter .42s both}
+.changelog-entry:nth-child(2){animation-delay:.06s}
+.changelog-entry:nth-child(3){animation-delay:.12s}
+.changelog-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin:0 0 12px;color:var(--muted);font-size:12px;line-height:1.5}
+.changelog-meta time{font-weight:750;letter-spacing:.015em;color:var(--accent)}
+.changelog-category{display:inline-flex;align-items:center;padding:4px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-weight:650}
+.changelog-entry h3{margin:0 0 10px;font-size:19px;line-height:1.35}
+.changelog-entry ul{margin:0;padding-left:20px;color:var(--muted);line-height:1.75}
+.changelog-banner{border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin:18px 0;background:linear-gradient(125deg,var(--panel),var(--surface))}
+.changelog-banner h2{margin:12px 0 6px}
+.changelog-banner p{margin:0;color:var(--muted);line-height:1.65}
+@keyframes changelog-enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* Small interaction details across the interface. */
+.nav-link,.home-shortcut,.game-card,.game-tile,.player-btn,.theme-toggle,.update-indicator,.ai-chat-item,.field,button{transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .2s ease,transform .18s ease}
+.nav-link:hover,.home-shortcut:hover,.player-btn:hover,.theme-toggle:hover,.update-indicator:hover{transform:translateY(-2px)}
+.game-card:hover,.game-tile:hover{transform:translateY(-3px);box-shadow:0 12px 28px #00000020}
+button:active,.home-shortcut:active,.nav-link:active{transform:scale(.97)}
+.toast{animation:toast-pop .24s cubic-bezier(.2,.8,.2,1) both}
+@keyframes toast-pop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.changelog-entry,.toast{animation:none!important}*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
