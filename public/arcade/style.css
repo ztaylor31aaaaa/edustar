@@ -389,3 +389,21 @@ body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:hover)~.player-shell{le
 .light .update-indicator{background:#fffdf7}
 @media(max-width:900px){.ai-workspace{grid-template-columns:190px minmax(0,1fr);gap:10px}.ai-history-sidebar{padding:12px 9px}.ai-main-panel{padding:12px}.ai-main-head{padding-right:100px}}
 @media(max-width:700px){.page:has(.ai-workspace){width:calc(100% - 16px);padding-top:18px}.ai-workspace{display:flex;flex-direction:column;min-height:0}.ai-history-sidebar{min-height:0;max-height:190px}.ai-chat-list{max-height:95px}.ai-main-panel{min-height:620px}.ai-main-head{padding-right:0;align-items:flex-start}.ai-settings-menu{position:relative;top:auto;right:auto;align-self:flex-end}.ai-settings-card{right:0;top:40px}.ai-log{height:48vh;min-height:300px}.ai-composer-meta span:last-child{display:none}.update-indicator{font-size:8px;padding:6px 7px}.home-date-card{margin-bottom:30px}.game-grid.cards-layout .game-card{grid-template-columns:105px minmax(0,1fr)}.game-grid.cards-layout .game-image{min-height:120px}}
+
+/* Preserve the alternate horizontal-tab preference with the compact sidebar system. */
+body.nav-top .layout,body.nav-bottom .layout{display:flex;flex-direction:column;min-height:100vh}
+body.nav-top .sidebar,body.nav-bottom .sidebar{width:100%;height:auto;min-height:64px;position:sticky;left:auto;top:0;bottom:auto;display:flex;flex-direction:row;align-items:center;gap:5px;overflow-x:auto;overflow-y:hidden;padding:9px 13px}
+body.nav-bottom .sidebar{order:2;top:auto;bottom:0;border-top:1px solid var(--line);border-bottom:0}
+body.nav-top .sidebar:hover,body.nav-bottom .sidebar:hover{position:sticky;width:100%;box-shadow:none}
+body.nav-top .brand,body.nav-bottom .brand{display:flex;justify-content:flex-start;padding:0 9px 0 0;margin:0}
+body.nav-top .brand>span:not(.brand-icon),body.nav-bottom .brand>span:not(.brand-icon){display:inline}
+body.nav-top .brand-icon,body.nav-bottom .brand-icon{width:31px;height:31px}
+body.nav-top .nav-caption,body.nav-bottom .nav-caption,body.nav-top .sidebar-spacer,body.nav-bottom .sidebar-spacer,body.nav-top .sidebar-foot,body.nav-bottom .sidebar-foot{display:none}
+body.nav-top .nav-link,body.nav-bottom .nav-link{width:auto;height:40px;justify-content:flex-start;padding:8px 10px;margin:0;font-size:11px;gap:8px;overflow:visible}
+body.nav-top .nav-link b,body.nav-bottom .nav-link b,body.nav-top .nav-link .running-game-name,body.nav-bottom .nav-link .running-game-name{display:inline}
+body.nav-top .nav-link .running-game-close,body.nav-bottom .nav-link .running-game-close{display:inline}
+body.nav-top #running-game-tabs,body.nav-bottom #running-game-tabs{display:flex;flex-direction:row;gap:4px}
+body.nav-top .main,body.nav-bottom .main{min-height:0;flex:1;display:flex;flex-direction:column}
+body.nav-top .player-shell{top:145px}
+body.nav-bottom .player-shell{top:80px;bottom:86px}
+@media(max-width:700px){body.nav-top .sidebar,body.nav-bottom .sidebar{width:100%;height:auto;min-height:56px;padding:7px;gap:3px}body.nav-top .nav-link,body.nav-bottom .nav-link{width:auto;height:38px;padding:7px;font-size:10px}body.nav-top .brand,body.nav-bottom .brand{display:none}}
