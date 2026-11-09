@@ -405,3 +405,14 @@ body.nav-top .main,body.nav-bottom .main{min-height:0;flex:1;display:flex;flex-d
 body.nav-top .player-shell{top:145px}
 body.nav-bottom .player-shell{top:80px;bottom:86px}
 @media(max-width:700px){body.nav-top .sidebar,body.nav-bottom .sidebar{width:100%;height:auto;min-height:56px;padding:7px;gap:3px}body.nav-top .nav-link,body.nav-bottom .nav-link{width:auto;height:38px;padding:7px;font-size:10px}body.nav-top .brand,body.nav-bottom .brand{display:none}}
+
+.ai-user-image{display:block;max-width:min(420px,100%);max-height:320px;object-fit:contain;margin:10px 0 2px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.ai-attachment-chip{max-width:100%;overflow-wrap:anywhere}
+.ai-attachment-chip button{flex:0 0 auto}
+body.nav-top .sidebar,body.nav-bottom .sidebar{width:100%;height:auto;min-height:64px;position:sticky;display:flex;flex-direction:row;align-items:center;gap:5px;overflow-x:auto;overflow-y:hidden;padding:9px 13px}
+body.nav-top .sidebar:hover,body.nav-bottom .sidebar:hover{width:100%;position:sticky;box-shadow:none}
+body.nav-top .nav-link,body.nav-bottom .nav-link{width:auto;height:40px;min-height:40px;justify-content:flex-start;padding:8px 10px;margin:0;font-size:11px;gap:8px}
+body.nav-top .nav-link b,body.nav-bottom .nav-link b{display:inline}
+body.nav-top .nav-link .running-game-name,body.nav-bottom .nav-link .running-game-name{display:inline}
+body.nav-top .nav-link .running-game-close,body.nav-bottom .nav-link .running-game-close{display:inline}
+@media(max-width:700px){.ai-user-image{max-height:220px}body.nav-top .sidebar,body.nav-bottom .sidebar{width:100%;min-height:54px;padding:6px}body.nav-top .nav-link,body.nav-bottom .nav-link{font-size:10px;padding:6px}}
