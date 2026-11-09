@@ -3,6 +3,23 @@ export default {
     const url = new URL(request.url);
 
 
+    if (url.pathname === "/api/version") {
+      if (request.method !== "GET") return Response.json({ error: "GET required." }, { status: 405 });
+      try {
+        const upstream = await fetch("https://api.github.com/repos/ztaylor31aaaaa/edustar/commits?path=public/arcade/app.js&per_page=1", {
+          headers: { "Accept": "application/vnd.github+json", "User-Agent": "SunsetOS-update-checker" },
+          cf: { cacheTtl: 60, cacheEverything: true }
+        });
+        if (!upstream.ok) return Response.json({ error: "Could not check the latest app version." }, { status: 502 });
+        const commits = await upstream.json();
+        const sha = Array.isArray(commits) && commits[0]?.sha;
+        if (typeof sha !== "string") return Response.json({ error: "No app version was returned." }, { status: 502 });
+        return Response.json({ sha }, { headers: { "Cache-Control": "public, max-age=60" } });
+      } catch {
+        return Response.json({ error: "Version check is temporarily unavailable." }, { status: 502 });
+      }
+    }
+
     if (url.pathname === "/api/dev-code") {
       if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
       if (!env.DEV_CODE_SECRET) return Response.json({ error: "Developer access is not configured on this Worker." }, { status: 503 });
