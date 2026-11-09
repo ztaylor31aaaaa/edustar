@@ -303,8 +303,6 @@ body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:hover) .running-games,b
 body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:not(:hover):not(:focus-within)) .running-games .running-game-name{display:none}
 body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:not(:hover):not(:focus-within)) .running-game-tab{justify-content:center;width:50px;margin:4px auto;padding:9px 0}
 body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:not(:hover):not(:focus-within)) .running-game-close{display:none}
-.player-shell{left:72px}
-body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:hover)~.player-shell{left:246px}
 @media(max-width:720px){body:not(.nav-top):not(.nav-bottom) .layout{display:block}body:not(.nav-top):not(.nav-bottom) .sidebar{position:relative;width:100%;height:auto;min-height:54px;display:flex;flex-direction:row;overflow-x:auto;padding:8px;border:0;border-bottom:1px solid var(--line)}body:not(.nav-top):not(.nav-bottom) .brand{display:none}body:not(.nav-top):not(.nav-bottom) .nav-link{width:42px;height:40px;min-height:40px;flex:0 0 42px;margin:0}body:not(.nav-top):not(.nav-bottom) .nav-link:after{display:none}body:not(.nav-top):not(.nav-bottom) .nav-link span{display:block}body:not(.nav-top):not(.nav-bottom) .sidebar-foot,body:not(.nav-top):not(.nav-bottom) .nav-caption{display:none!important}body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:hover) .nav-link{width:42px;height:40px;min-height:40px;flex:0 0 42px;margin:0;padding:0;justify-content:center}body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:hover) .nav-link:after{display:none}}
 /* Home dashboard inspired by the supplied reference, with SunsetOS styling. */
 .page:has(.sunset-home){width:min(1120px,calc(100% - 42px));padding-top:clamp(28px,7vh,82px)}
