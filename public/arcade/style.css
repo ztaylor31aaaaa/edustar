@@ -506,3 +506,20 @@ body.nav-top .main,body.nav-bottom .main{min-height:0;flex:1;display:flex;flex-d
 body.nav-top .player-shell{top:132px!important;left:0!important}
 body.nav-bottom .player-shell{top:68px!important;left:0!important;bottom:64px!important}
 @media(max-width:700px){body.nav-top .sidebar,body.nav-bottom .sidebar{min-height:54px;padding:6px}body.nav-top .nav-link,body.nav-bottom .nav-link{height:38px;padding:6px;font-size:10px}}
+
+
+/* Sidebar hover must resize the grid, never cover the main page. */
+@media(min-width:721px){
+ body:not(.nav-top):not(.nav-bottom) .layout{display:grid!important;grid-template-columns:76px minmax(0,1fr)!important;transition:grid-template-columns .22s ease}
+ body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:hover),body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:focus-within){grid-template-columns:248px minmax(0,1fr)!important}
+ body:not(.nav-top):not(.nav-bottom) .sidebar,body:not(.nav-top):not(.nav-bottom) .sidebar:hover,body:not(.nav-top):not(.nav-bottom) .sidebar:focus-within{position:sticky!important;left:auto!important;top:0!important;bottom:auto!important;width:100%!important;min-width:0!important;height:100vh;max-height:100vh}
+ body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar.auto-collapsed){grid-template-columns:76px minmax(0,1fr)!important}
+ body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed,body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed:hover,body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed:focus-within{position:sticky!important;width:76px!important;min-width:76px!important;padding:14px 9px!important;box-shadow:none!important}
+ body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .brand{justify-content:center!important;gap:0!important;padding:0 0 25px!important}
+ body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .brand>span:last-child,body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .nav-caption,body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .sidebar-foot{display:none!important}
+ body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .nav-link{justify-content:center!important;gap:0!important;width:50px!important;height:46px!important;min-height:46px!important;margin:4px auto!important;padding:0!important;font-size:0!important}
+ body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .nav-link span{font-size:19px!important}
+ body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .nav-link b,body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .nav-link:after{display:none!important}
+ body:not(.nav-top):not(.nav-bottom) .sidebar.auto-collapsed .running-games{display:none!important}
+}
+body.game-active .theme-toggle{display:none!important}
