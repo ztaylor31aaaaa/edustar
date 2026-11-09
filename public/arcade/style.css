@@ -421,3 +421,72 @@ body.nav-top .nav-link .running-game-close,body.nav-bottom .nav-link .running-ga
 body:not(.nav-top):not(.nav-bottom) .player-shell{left:90px;right:18px;top:82px;bottom:18px}
 body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:hover) .player-shell,body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:focus-within) .player-shell{left:260px}
 @media(max-width:720px){body:not(.nav-top):not(.nav-bottom) .player-shell{left:8px;right:8px;top:118px;bottom:8px}}
+
+/* Consistent, compact navigation and correctly sized game viewport. */
+.layout{grid-template-columns:76px minmax(0,1fr)!important}
+.sidebar{width:76px!important;min-width:76px;height:100vh;position:sticky;top:0;padding:14px 9px;overflow-x:hidden;overflow-y:auto;z-index:45}
+.sidebar:hover,.sidebar:focus-within{position:fixed;left:0;top:0;bottom:0;width:248px!important;min-width:248px;box-shadow:18px 0 50px #0009}
+.main{min-width:0;width:100%;max-width:none}
+.player-shell{left:76px!important;right:0!important;top:68px!important;bottom:0!important;border-radius:0!important}
+.player-stage,.player-stage iframe{width:100%;height:100%;min-width:0;min-height:0}
+.running-game-tab{display:flex;align-items:center;justify-content:center;gap:7px}
+.running-game-tab>span:first-child{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:7px;background:var(--panel2);font-size:13px}
+.running-game-name{display:none}
+.sidebar:hover .running-game-name,.sidebar:focus-within .running-game-name{display:inline}
+.sidebar:hover .running-game-tab,.sidebar:focus-within .running-game-tab{font-size:12px!important;justify-content:flex-start}
+.online-count{font-size:10px;color:var(--muted);white-space:nowrap;border:1px solid var(--line);border-radius:20px;padding:7px 10px}
+.game-symbol{font-size:22px!important;font-weight:700}
+.ai-chat-row{display:flex;align-items:center;gap:4px;width:100%;min-width:0}
+.ai-chat-row .ai-chat-item{flex:1;min-width:0}
+.ai-chat-action{width:27px;height:27px;flex:0 0 27px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--muted);opacity:.45}
+.ai-chat-row:hover .ai-chat-action,.ai-chat-action:focus-visible{opacity:1}
+.ai-chat-action:hover{background:var(--panel2);color:var(--text);border-color:var(--line)}
+/* Grid view is a genuine square thumbnail wall; names appear on hover. */
+.game-grid.grid-layout{grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:13px}
+.game-grid.grid-layout .game-card{position:relative;aspect-ratio:1/1;min-height:0;border-radius:13px;background:var(--panel);overflow:hidden}
+.game-grid.grid-layout .game-image{position:absolute;inset:0;height:100%;background:var(--panel2)}
+.game-grid.grid-layout .game-image img{width:100%;height:100%;object-fit:cover}
+.game-grid.grid-layout .game-image .fallback{font-size:42px}
+.game-grid.grid-layout .game-body{position:absolute;inset:auto 0 0;padding:30px 11px 11px;background:linear-gradient(transparent,#080706eF 48%);opacity:0;transform:translateY(7px);transition:opacity .18s,transform .18s}
+.game-grid.grid-layout .game-card:hover .game-body,.game-grid.grid-layout .game-card:focus-within .game-body{opacity:1;transform:none}
+.game-grid.grid-layout .game-body h3{color:#fff;font-size:13px;margin:0;white-space:normal}
+.game-grid.grid-layout .game-body p,.game-grid.grid-layout .game-category{display:none}
+.game-grid.grid-layout .game-foot{margin-top:8px}
+.game-grid.grid-layout .mini-button{padding:5px 7px}
+.game-grid.cards-layout{grid-template-columns:1fr}
+.game-grid.cards-layout .game-card{display:grid;grid-template-columns:170px minmax(0,1fr);aspect-ratio:auto}
+.game-grid.cards-layout .game-image{position:relative;height:100%;min-height:140px}
+.game-grid.cards-layout .game-body{position:relative;opacity:1;transform:none;background:transparent}
+.game-grid.cards-layout .game-body p,.game-grid.cards-layout .game-category{display:block}
+/* Warm cream-and-gold light theme, applied to the whole app shell. */
+body.light{color-scheme:light;--bg:#fffaf0;--panel:#fffdf8;--panel2:#fff2d2;--line:#eadfc8;--text:#302719;--muted:#806f55;--accent:#c18b13;--accent2:#75500a;--glow:#d8a52a33;background:#fffaf0;color:var(--text)}
+body.light .sidebar,body.light .topbar{background:#fff8e9;border-color:#e8dcc4;color:var(--text)}
+body.light .nav-link{color:#756343}
+body.light .nav-link span{color:#a77a18}
+body.light .nav-link:hover{background:#f6ebd4;color:#47340e}
+body.light .nav-link.active{background:#f5e7c5;color:#684807;box-shadow:inset 3px 0 #c18b13}
+body.light .brand,body.light .topbar strong{color:#302719}
+body.light .brand-muted,body.light .crumb{color:#98701d}
+body.light .game-card,body.light .feature-card,body.light .settings-card,body.light .ai-history-sidebar,body.light .ai-main-panel{background:#fffdf8;border-color:#eadfc8;color:#302719}
+body.light .game-image{background:#f3e9d7}
+body.light .game-grid.grid-layout .game-body{background:linear-gradient(transparent,#302719eF 48%)}
+body.light .field,body.light input,body.light textarea,body.light select{background:#fff;color:#302719;border-color:#e5d8bf}
+body.light .home-search,body.light .home-date-card{background:#fffdf8;border-color:#eadfc8;color:#302719}
+body.light .home-search input{background:transparent;color:#302719}
+body.light .home-shortcut>span{background:#fff2d2;border-color:#eadfc8;color:#75500a}
+body.light .theme-toggle,body.light .update-indicator{background:#fffdf8;color:#75500a;border-color:#e4d5b6}
+body.light .online-count{color:#756343;border-color:#e4d5b6}
+body.light .ai-chat-item{color:#302719}
+body.light .ai-chat-item.active{background:#f5e7c5;color:#684807}
+body.light .ai-chat-action{color:#806f55}
+body.light .ai-log{background:#fffdf8}
+body.light .ai-message{background:#f8f1e4;color:#302719}
+body.light .ai-message.assistant{background:#fffdf8}
+body.light .ai-code{background:#f0e9dc;color:#302719}
+body.light .player-shell{background:#fff;border-color:#e4d5b6}
+body.light .player-bar{background:#fff2d2;color:#302719;border-color:#e4d5b6}
+body.light .player-btn{background:#fffdf8;color:#75500a;border-color:#e4d5b6}
+body.light .toast{background:#fffdf8;color:#302719;border-color:#e4d5b6}
+body.light .page-heading p:not(.kicker){color:#806f55}
+body.light .online-count{background:#fffdf8}
+@media(max-width:700px){.layout{grid-template-columns:58px minmax(0,1fr)!important}.sidebar{width:58px!important;min-width:58px;padding:10px 4px}.sidebar:hover,.sidebar:focus-within{width:min(245px,82vw)!important;min-width:min(245px,82vw)}.player-shell{left:58px!important;top:58px!important}.game-grid.grid-layout{grid-template-columns:repeat(auto-fill,minmax(115px,1fr))}}
