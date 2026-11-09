@@ -416,3 +416,8 @@ body.nav-top .nav-link b,body.nav-bottom .nav-link b{display:inline}
 body.nav-top .nav-link .running-game-name,body.nav-bottom .nav-link .running-game-name{display:inline}
 body.nav-top .nav-link .running-game-close,body.nav-bottom .nav-link .running-game-close{display:inline}
 @media(max-width:700px){.ai-user-image{max-height:220px}body.nav-top .sidebar,body.nav-bottom .sidebar{width:100%;min-height:54px;padding:6px}body.nav-top .nav-link,body.nav-bottom .nav-link{font-size:10px;padding:6px}}
+
+/* Align the floating game viewport with the compact/expanded sidebar. */
+body:not(.nav-top):not(.nav-bottom) .player-shell{left:90px;right:18px;top:82px;bottom:18px}
+body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:hover) .player-shell,body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:focus-within) .player-shell{left:260px}
+@media(max-width:720px){body:not(.nav-top):not(.nav-bottom) .player-shell{left:8px;right:8px;top:118px;bottom:8px}}
