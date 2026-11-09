@@ -59,14 +59,14 @@ export default {
       }
 
       const length = Number(request.headers.get("Content-Length") || 0);
-      if (length > 150_000) {
+      if (length > 500_000) {
         return Response.json({ error: { message: "Request is too large." } }, { status: 413 });
       }
 
       let data;
       try {
         const raw = await request.text();
-        if (raw.length > 150_000) {
+        if (raw.length > 500_000) {
           return Response.json({ error: { message: "Request is too large." } }, { status: 413 });
         }
         data = JSON.parse(raw);
