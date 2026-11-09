@@ -62,6 +62,26 @@ export default {
       return Response.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
     }
 
+    if (url.pathname === "/api/version") {
+      if (request.method !== "GET") {
+        return Response.json({ error: "GET required." }, { status: 405 });
+      }
+      try {
+        const upstream = await fetch("https://raw.githubusercontent.com/ztaylor31aaaaa/edustar/main/public/arcade/version.json", {
+          headers: { "Accept": "application/json" },
+          cf: { cacheTtl: 0, cacheEverything: false }
+        });
+        if (!upstream.ok) throw new Error("Version source returned " + upstream.status);
+        const version = await upstream.json();
+        if (!version || typeof version.sha !== "string" || !/^[a-f0-9]{40}$/i.test(version.sha)) {
+          throw new Error("Version source returned invalid data");
+        }
+        return Response.json(version, { headers: { "Cache-Control": "no-store" } });
+      } catch {
+        return Response.json({ error: "Could not retrieve the latest version." }, { status: 502, headers: { "Cache-Control": "no-store" } });
+      }
+    }
+
     if (url.pathname === "/api/ai/nim") {
       if (request.method !== "POST") {
         return Response.json({ error: { message: "POST required." } }, { status: 405 });
