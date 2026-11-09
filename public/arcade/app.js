@@ -3,7 +3,7 @@
 const $=s=>document.querySelector(s),page=$("#page"),shell=$("#player-shell"),modal=$("#modal-layer"),body=$("#modal-body"),footer=$("#modal-footer");const frameStage=$("#player-stage"),runningTabs=$("#running-game-tabs");let frame=null,sessions=[],activeSessionId=null;
 
 let games=[],activeGame=null,currentView="home",playStarted=0,tick=null;const CATALOGUE="https://sme-library.global.ssl.fastly.net/data/games.json",CDN_ROOT="https://sme-library.global.ssl.fastly.net/";
-const defaults={theme:"dark",scale:"100",compact:false,motion:false,confirm:false,showDescriptions:true,animations:"full",accent:"#ffc928",profileName:"Player",avatar:"☀",navPosition:"sidebar",libraryLayout:"grid",clock24:false,temperature:0.4,responseStyle:"balanced",customInstructions:""};
+const defaults={theme:"dark",scale:"100",compact:false,motion:false,confirm:false,showDescriptions:true,animations:"full",accent:"#ffc928",navPosition:"sidebar",libraryLayout:"grid",clock24:false,temperature:0.4,responseStyle:"balanced",customInstructions:""};
 const get=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}},put=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const settings=()=>({...defaults,...get("sunset_settings",{})});
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
