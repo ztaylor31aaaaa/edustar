@@ -195,7 +195,7 @@ body{background:radial-gradient(ellipse at 50% -20%,#9c335b26,transparent 48%),r
 .page:has(.ai-workspace)>.page-heading{margin-bottom:16px}
 .page:has(.ai-workspace)>.page-heading h1{font-size:28px}
 .page:has(.ai-workspace)>.page-heading p:not(.kicker){display:none}
-.ai-workspace{display:grid;grid-template-columns:230px minmax(0,1fr);gap:14px;position:relative;padding:0;min-height:min(760px,calc(100vh - 150px))}
+.ai-workspace{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;position:relative;padding:0;min-height:min(760px,calc(100vh - 150px))}
 .ai-history-sidebar,.ai-main-panel{min-width:0;border:1px solid var(--line);border-radius:18px;background:color-mix(in srgb,var(--panel) 94%,transparent);box-shadow:0 15px 45px #0002}
 .ai-history-sidebar{display:flex;flex-direction:column;padding:15px 11px;max-height:calc(100vh - 145px);position:sticky;top:82px}
 .ai-history-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 5px 13px}
@@ -547,3 +547,11 @@ button:active,.home-shortcut:active,.nav-link:active{transform:scale(.97)}
 .toast{animation:toast-pop .24s cubic-bezier(.2,.8,.2,1) both}
 @keyframes toast-pop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.changelog-entry,.toast{animation:none!important}*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+/* Give AI chat titles enough room before truncating. */
+@media(min-width:1101px){.ai-workspace{grid-template-columns:minmax(280px,320px) minmax(0,1fr)}}
+.ai-history-sidebar{min-width:0}
+.ai-chat-item{min-width:0}
+.ai-chat-item b{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:900px){.ai-workspace{grid-template-columns:minmax(240px,280px) minmax(0,1fr)}}
+@media(max-width:700px){.ai-workspace{grid-template-columns:1fr}.ai-history-sidebar{position:relative;top:auto;max-height:240px}}
