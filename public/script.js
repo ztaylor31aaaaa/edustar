@@ -5,7 +5,6 @@ const SUNSET_ACCESS_KEY = "sunsetos_access";
 const GAME_ACCESS_CODE = "stupidlyakward";
 
 // A fresh 10-character code is created for this browser tab's current page session.
-// In the browser console, run: devmode = code
 var code = sessionStorage.getItem("sunsetos_dev_code");
 if (!code) {
   code = Array.from(crypto.getRandomValues(new Uint8Array(5)), value => value.toString(16).padStart(2, "0")).join("");
