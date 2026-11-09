@@ -83,9 +83,14 @@ export default {
       }
 
       const safeMessages = [];
+      let totalMessageChars = 0;
       for (const item of messages) {
-        if (!item || !["system", "user", "assistant"].includes(item.role) || typeof item.content !== "string" || item.content.length > 12_000) {
+        if (!item || !["system", "user", "assistant"].includes(item.role) || typeof item.content !== "string" || item.content.length > 100_000) {
           return Response.json({ error: { message: "Message format is invalid or too large." } }, { status: 400 });
+        }
+        totalMessageChars += item.content.length;
+        if (totalMessageChars > 120_000) {
+          return Response.json({ error: { message: "Conversation is too large. Start a new chat or attach smaller files." } }, { status: 413 });
         }
         safeMessages.push({ role: item.role, content: item.content });
       }
