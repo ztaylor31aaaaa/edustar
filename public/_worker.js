@@ -57,7 +57,9 @@ export default {
         return Response.json({ error: "Could not contact the email provider. Try again later." }, { status: 502 });
       }
     }
-\n    if (url.pathname === "/api/dev-code") {
+
+
+    if (url.pathname === "/api/dev-code") {
       if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
       if (!env.DEV_CODE_SECRET) return Response.json({ error: "Developer access is not configured on this Worker." }, { status: 503 });
       const origin = request.headers.get("Origin");
