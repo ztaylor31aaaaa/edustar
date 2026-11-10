@@ -20,7 +20,44 @@ export default {
       }
     }
 
-    if (url.pathname === "/api/dev-code") {
+
+    if (url.pathname === "/api/bug-report") {
+      if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
+      const origin = request.headers.get("Origin");
+      if (origin && origin !== url.origin) return Response.json({ error: "Cross-origin requests are not allowed." }, { status: 403 });
+      if (!env.RESEND_API_KEY || !env.BUG_REPORT_FROM) {
+        return Response.json({ error: "Bug-report email is not configured yet. The site owner must add RESEND_API_KEY and BUG_REPORT_FROM to the Worker environment." }, { status: 503 });
+      }
+      let report;
+      try { report = await request.json(); } catch { return Response.json({ error: "Invalid report data." }, { status: 400 }); }
+      if (typeof report.website === "string" && report.website.trim()) return Response.json({ ok: true });
+      const clean = (value, max) => typeof value === "string" ? value.trim().slice(0, max) : "";
+      const category = clean(report.category, 60);
+      const title = clean(report.title, 100);
+      const details = clean(report.details, 5000);
+      const page = clean(report.page, 300);
+      const allowed = ["Bug","Visual issue","Performance","Game compatibility","AI issue","Suggestion","Other feedback"];
+      if (!allowed.includes(category) || !title || !details) return Response.json({ error: "Choose a category and provide a title and details." }, { status: 400 });
+      const text = "SunsetOS bug report\\n\\nCategory: " + category + "\\nTitle: " + title + "\\nPage: " + page + "\\n\\nDetails:\\n" + details;
+      try {
+        const sent = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            from: env.BUG_REPORT_FROM,
+            to: ["ztaylor31@salesian.vic.edu.au", "occularpixel.zac@gmail.com"],
+            subject: "[SunsetOS] " + category + ": " + title,
+            text
+          })
+        });
+        const result = await sent.json().catch(() => ({}));
+        if (!sent.ok) return Response.json({ error: "Email provider rejected the report. Check the Worker email configuration." }, { status: 502 });
+        return Response.json({ ok: true, id: result.id || null }, { headers: { "Cache-Control": "no-store" } });
+      } catch {
+        return Response.json({ error: "Could not contact the email provider. Try again later." }, { status: 502 });
+      }
+    }
+\n    if (url.pathname === "/api/dev-code") {
       if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
       if (!env.DEV_CODE_SECRET) return Response.json({ error: "Developer access is not configured on this Worker." }, { status: 503 });
       const origin = request.headers.get("Origin");
