@@ -752,3 +752,10 @@ body.light .update-indicator{background:#fffdfa;color:var(--text)}
 .solaris-back-top:hover{transform:translateY(-3px)}
 .solaris-back-top[hidden]{display:none}
 @media(max-width:620px){.solaris-back-top{right:12px;bottom:12px}}
+
+
+.shortcut-list{display:grid;gap:8px;margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.shortcut-list>div{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.shortcut-list span{margin-left:auto}
+.shortcut-list kbd{min-width:24px;padding:4px 6px;text-align:center;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;background:var(--panel);color:var(--text);font:700 10px Arial,sans-serif}
+body.light .shortcut-list{background:#f7f3ed}
