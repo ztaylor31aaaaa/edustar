@@ -682,3 +682,12 @@ body{background-image:radial-gradient(ellipse at 78% -18%,#b17a1c18,transparent 
 .plain-bg body,.plain-bg{background-image:none!important}
 .no-status-label .status-label,.no-status-label .online-count{display:none!important}
 @media(max-width:760px){.options-grid{grid-template-columns:1fr}.options-toolbar{align-items:flex-start}.options-grid .setting .field{max-width:52%}}
+
+
+/* Integrated theme selector in Solaris Options */
+.theme-choice-group{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.theme-choice{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:82px;padding:9px 13px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--muted);font:inherit;font-size:12px;font-weight:650;cursor:pointer;transition:background .2s ease,border-color .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease}
+.theme-choice:hover{transform:translateY(-2px);border-color:var(--accent);color:var(--text)}
+.theme-choice.active{background:color-mix(in srgb,var(--accent) 16%,var(--panel));border-color:var(--accent);color:var(--text);box-shadow:0 0 0 2px var(--glow)}
+.theme-choice:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:520px){.theme-choice-group{width:100%}.theme-choice{flex:1;min-width:0}}
