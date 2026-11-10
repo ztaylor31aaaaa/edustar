@@ -574,3 +574,14 @@ button:active,.home-shortcut:active,.nav-link:active{transform:scale(.97)}
 .bug-honeypot{position:absolute!important;left:-10000px!important;width:1px;height:1px;overflow:hidden}
 #bug-submit{white-space:nowrap}
 @media(max-width:600px){.bug-report-actions{align-items:stretch;flex-direction:column}.bug-report-actions .button{width:100%}}
+
+/* Feedback form attachments and console options. */
+.feedback-options{display:grid;gap:10px;padding:13px;border:1px solid var(--line);border-radius:13px;background:#17140fdd}
+.feedback-check{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.feedback-check input{margin:3px 0 0;accent-color:var(--accent);width:16px;height:16px;flex:0 0 auto}
+.feedback-check span{display:grid;gap:4px}
+.feedback-check strong{font-size:12px}
+.feedback-check small,.feedback-upload small{font-size:11px;color:var(--muted);font-weight:400;line-height:1.5}
+.feedback-upload{display:grid;gap:8px}
+.feedback-upload input{padding:10px}
+.feedback-image-list{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
