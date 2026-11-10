@@ -574,3 +574,35 @@ button:active,.home-shortcut:active,.nav-link:active{transform:scale(.97)}
 .bug-honeypot{position:absolute!important;left:-10000px!important;width:1px;height:1px;overflow:hidden}
 #bug-submit{white-space:nowrap}
 @media(max-width:600px){.bug-report-actions{align-items:stretch;flex-direction:column}.bug-report-actions .button{width:100%}}
+
+
+/* SOLARIS identity refresh */
+:root{--bg:#0d111b;--panel:#151c2b;--panel2:#202a3c;--line:#303c50;--text:#f4f6fb;--muted:#a5b0c3;--accent:#ffc94a;--accent2:#ffe29a;--glow:#ffc94a35}
+body{background:radial-gradient(ellipse at 78% -12%,#d99b2b20,transparent 42%),radial-gradient(ellipse at 0% 100%,#31517a18,transparent 38%),var(--bg)}
+.sidebar{background:#101725ed;border-right-color:#303c50}
+.topbar{background:#111827ed;border-bottom-color:#303c50}
+.brand-icon{background:linear-gradient(145deg,#fff0b0,#e8a92e);box-shadow:0 5px 24px #ffc94a30}
+.nav-link span{color:#e5b64d}
+.nav-link:hover{background:#273349;color:#fff}
+.nav-link.active{background:linear-gradient(100deg,#ffc94a20,#ffc94a08);color:#ffe29a;box-shadow:inset 3px 0 #ffc94a}
+.home-search,.home-date-card,.home-shortcut,.game-card,.settings-card,.ai-history-sidebar,.ai-main-panel{border-color:#303c50}
+.home-brand-mark>span{color:#f4f6fb!important;letter-spacing:-.075em}
+.home-brand-mark>span:after{content:".";color:#ffc94a}
+.home-brand-mark>b{display:none}
+.home-brand-mark small{color:#a5b0c3;letter-spacing:.24em}
+.home-search{background:linear-gradient(145deg,#182235,#121a29);box-shadow:0 18px 50px #0005}
+.home-shortcut{background:linear-gradient(145deg,#192438,#131c2c)}
+.home-shortcut:hover{border-color:#b98a32;box-shadow:0 12px 30px #0004}
+.game-card,.settings-card,.ai-history-sidebar,.ai-main-panel{background:linear-gradient(145deg,#182235,#121a29)}
+.game-image{background:radial-gradient(circle at 50% 20%,#3a4b65,#151e2d)}
+.field{background:#121a29;border-color:#39475d}
+.button.primary{background:linear-gradient(130deg,#ffe18a,#f0b52f);color:#2d2108}
+.player-bar{background:#151e2d;border-color:#303c50}
+body.light{--bg:#f5f7fb;--panel:#fff;--panel2:#edf1f7;--line:#dce3ee;--text:#182235;--muted:#68758b;--accent:#b77b0c;--accent2:#754d08;--glow:#d99b2b24;background:#f5f7fb;color:var(--text)}
+body.light .sidebar,body.light .topbar{background:#fff;border-color:#dce3ee}
+body.light .home-search,body.light .home-date-card,body.light .home-shortcut,body.light .game-card,body.light .settings-card,body.light .ai-history-sidebar,body.light .ai-main-panel{background:#fff;border-color:#dce3ee}
+body.light .home-brand-mark>span{color:#182235!important}
+body.light .field,body.light input,body.light textarea,body.light select{background:#fff;color:#182235;border-color:#dce3ee}
+body.light .nav-link:hover{background:#edf1f7;color:#182235}
+body.light .nav-link.active{background:#fff4d8;color:#754d08;box-shadow:inset 3px 0 #b77b0c}
+@media(prefers-reduced-motion:reduce){body{scroll-behavior:auto}}
