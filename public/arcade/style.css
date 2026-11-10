@@ -698,3 +698,16 @@ html,body{background:#11100d!important;background-image:none!important;backgroun
 body.light,body.light #app-layout{background:#fffaf0!important;background-image:none!important}
 #app-layout,.main,.page{background-image:none!important}
 html::before,html::after,body::before,body::after,#app-layout::before,#app-layout::after{content:none!important;display:none!important;background:none!important;box-shadow:none!important;filter:none!important}
+
+
+/* Native Solaris theme switch */
+.theme-switch{display:inline-flex;align-items:center;gap:8px;padding:5px 8px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--text);font:inherit;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:border-color .18s,background .18s,transform .18s}
+.theme-switch:hover{border-color:var(--accent);transform:translateY(-1px)}
+.theme-switch-track{width:35px;height:20px;display:inline-flex;align-items:center;padding:2px;border-radius:20px;background:#5a554a;transition:background .2s}
+.theme-switch-thumb{width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0005;transform:translateX(0);transition:transform .2s}
+.theme-switch[aria-checked="true"] .theme-switch-track{background:var(--accent)}
+.theme-switch[aria-checked="true"] .theme-switch-thumb{transform:translateX(15px)}
+.theme-switch-label{min-width:31px;text-align:left}
+.topbar-theme-switch{margin-left:2px}
+body.light .theme-switch{background:#fffdfa;color:#302630}
+@media(max-width:620px){.topbar-theme-switch .theme-switch-label{display:none}.topbar-theme-switch{padding:5px}.top-actions{gap:7px}}
