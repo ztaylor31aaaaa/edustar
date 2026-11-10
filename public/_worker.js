@@ -7,7 +7,7 @@ export default {
       if (request.method !== "GET") return Response.json({ error: "GET required." }, { status: 405 });
       try {
         const upstream = await fetch("https://api.github.com/repos/ztaylor31aaaaa/edustar/commits?path=public/arcade/app.js&per_page=1", {
-          headers: { "Accept": "application/vnd.github+json", "User-Agent": "SunsetOS-update-checker" },
+          headers: { "Accept": "application/vnd.github+json", "User-Agent": "Solaris-update-checker" },
           cf: { cacheTtl: 60, cacheEverything: true }
         });
         if (!upstream.ok) return Response.json({ error: "Could not check the latest app version." }, { status: 502 });
@@ -38,7 +38,7 @@ export default {
       const page = clean(report.page, 300);
       const allowed = ["Bug","Visual issue","Performance","Game compatibility","AI issue","Suggestion","Other feedback"];
       if (!allowed.includes(category) || !title || !details) return Response.json({ error: "Choose a category and provide a title and details." }, { status: 400 });
-      const text = "SunsetOS bug report\\n\\nCategory: " + category + "\\nTitle: " + title + "\\nPage: " + page + "\\n\\nDetails:\\n" + details;
+      const text = "Solaris bug report\n\nCategory: " + category + "\nTitle: " + title + "\nPage: " + page + "\n\nDetails:\n" + details;
       try {
         const sent = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -46,7 +46,7 @@ export default {
           body: JSON.stringify({
             from: env.BUG_REPORT_FROM,
             to: ["ztaylor31@salesian.vic.edu.au", "occularpixel.zac@gmail.com"],
-            subject: "[SunsetOS] " + category + ": " + title,
+            subject: "[Solaris] " + category + ": " + title,
             text
           })
         });
