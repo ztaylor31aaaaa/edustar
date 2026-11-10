@@ -75,3 +75,7 @@ body.light .home-activity-card button{color:#29200b}
 .site-theme-switch{box-shadow:0 2px 8px #0000000d}
 body.dark .site-theme-switch{box-shadow:0 3px 12px #0004}
 @media(max-width:760px){.site-header .site-theme-switch{order:5}.site-header .main-nav{order:3}}
+
+
+body.player-page .site-theme-dock{left:16px;right:auto;top:14px}
+body.player-page .site-theme-switch{opacity:.98}
