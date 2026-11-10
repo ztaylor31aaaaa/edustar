@@ -34,3 +34,44 @@ body.dark .site-theme-switch{background:#242018;color:#f7f1e6;border-color:#4b41
 body.dark .site-back-top{background:#d5a900;color:#211a0c}
 .site-header .site-theme-switch{margin-left:12px}
 @media(max-width:760px){.site-header .site-theme-switch{margin-left:auto;padding:5px 7px}.site-theme-label{display:none}.site-header{flex-wrap:wrap}}
+
+
+/* Accelerate My Education page-wide colour tokens and surfaces */
+body.dark{--background:#11100d;--surface:#1d1a14;--accent:#e4b51b;--text:#f7f1e6;--muted:#b6a98f}
+body.dark .site-header{background:#191711!important;border-bottom:1px solid #403625!important}
+body.dark .logo{color:#f7f1e6!important}
+body.dark .logo span{color:#e4b51b!important}
+body.dark .main-nav a{color:#d8cdb8!important}
+body.dark .hero{background:linear-gradient(135deg,#211d16,#17140f)!important;color:#f7f1e6!important}
+body.dark .hero h1,body.dark .hero h2{color:#fff8e9!important}
+body.dark .subjects,body.dark .about,body.dark .home-activities{background:#11100d!important;color:#f7f1e6!important}
+body.dark .subjects>p,body.dark .about p,body.dark .home-activities>p{color:#b6a98f!important}
+body.dark .subject-card,body.dark .home-activity-card,body.dark .choose-card{background:#1d1a14!important;color:#f7f1e6!important;border:1px solid #403625!important;box-shadow:0 10px 30px #0004}
+body.dark .subject-card h3,body.dark .home-activity-card h3,body.dark .choose-card h2{color:#fff8e9!important}
+body.dark .subject-card p,body.dark .home-activity-card p,body.dark .choose-card p{color:#b6a98f!important}
+body.dark .signin-page,body.dark .choose-main,body.dark .lesson-wrap{background:#11100d!important;color:#f7f1e6!important}
+body.dark .signin-card,body.dark .lesson-panel,body.dark .choose-card{background:#1d1a14!important;border-color:#403625!important;color:#f7f1e6!important}
+body.dark .signin-card h1,body.dark .lesson-wrap h1,body.dark .lesson-panel h2{color:#fff8e9!important}
+body.dark .signin-form label,body.dark .lesson-wrap p,body.dark .lesson-wrap li{color:#b6a98f!important}
+body.dark .signin-form input,body.dark .home-activity-dialog input{background:#211e18!important;color:#f7f1e6!important;border-color:#51452f!important}
+body.dark .lesson-example{background:#302817!important;color:#f7e8bf!important;border-color:#c49a23!important}
+body.dark .signin-footer,body.dark .choose-footer{background:#17140f!important;color:#b6a98f!important;border-color:#403625!important}
+body.dark .signin-home-link,body.dark .lesson-wrap a,body.dark .choose-footer a{color:#f0c74b!important}
+body.dark .home-activity-dialog{background:#1d1a14!important;color:#f7f1e6!important;border:1px solid #403625}
+body.dark .home-activity-dialog p{color:#b6a98f!important}
+body.dark .exit-game{background:#211d16!important;color:#ffe18a!important;border-color:#51452f!important}
+body.light .hero{background:linear-gradient(135deg,#fff4d5,#fffdfa)!important;color:#29232a!important}
+body.light .subjects,body.light .about,body.light .home-activities{background:#f7f3ed!important;color:#29232a!important}
+body.light .subject-card,body.light .home-activity-card,body.light .choose-card,body.light .lesson-panel,body.light .signin-card{background:#fffdfa!important;color:#29232a!important;border-color:#e2d8ce!important}
+body.light .subject-card h3,body.light .home-activity-card h3,body.light .choose-card h2,body.light .lesson-panel h2{color:#29232a!important}
+body.light .subject-card p,body.light .home-activity-card p,body.light .choose-card p{color:#776b73!important}
+body.light .signin-page,body.light .choose-main,body.light .lesson-wrap{background:#f7f3ed!important;color:#29232a!important}
+body.light .signin-footer,body.light .choose-footer{background:#fffdfa!important;color:#776b73!important}
+body.light .home-activity-dialog{background:#fffdfa!important;color:#29232a!important}
+body.light .home-activity-dialog p{color:#776b73!important}
+body.light .signin-form input,body.light .home-activity-dialog input{background:#fff!important;color:#29232a!important;border-color:#e2d8ce!important}
+body.light .lesson-example{background:#fff4d5!important;color:#463716!important}
+body.light .home-activity-card button{color:#29200b}
+.site-theme-switch{box-shadow:0 2px 8px #0000000d}
+body.dark .site-theme-switch{box-shadow:0 3px 12px #0004}
+@media(max-width:760px){.site-header .site-theme-switch{order:5}.site-header .main-nav{order:3}}
