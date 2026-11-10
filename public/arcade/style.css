@@ -650,3 +650,35 @@ body{background-image:radial-gradient(ellipse at 78% -18%,#b17a1c18,transparent 
 @media(prefers-reduced-motion:reduce){.page,.page-heading,.toast,.modal,.modal-layer,.player-shell{animation:none!important}.nav-link,.game-card,.feature-card,.settings-card,.button,.mini-button,.player-btn,.home-shortcut,.home-date-card,.ai-chat-item{transition:none!important}}
 .reduce-motion .page,.reduce-motion .page-heading,.reduce-motion .toast,.reduce-motion .modal,.reduce-motion .modal-layer,.reduce-motion .player-shell{animation:none!important}
 .reduce-motion .nav-link,.reduce-motion .game-card,.reduce-motion .feature-card,.reduce-motion .settings-card,.reduce-motion .button,.reduce-motion .mini-button,.reduce-motion .player-btn,.reduce-motion .home-shortcut,.reduce-motion .home-date-card,.reduce-motion .ai-chat-item{transition:none!important}
+
+
+/* Solaris Options control-centre styling */
+.options-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-10px 0 18px;padding:12px 15px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.options-saved{font-size:11px;color:var(--muted)}.options-saved:first-letter{color:#78c98a}
+.options-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.options-grid .settings-card{padding:20px;min-width:0}
+.options-card-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.options-card-head h2{margin:0 0 4px;font-size:16px}
+.options-card-head p{margin:0;color:var(--muted);font-size:11px}
+.options-icon{width:39px;height:39px;flex:0 0 39px;display:grid;place-items:center;border-radius:12px;background:color-mix(in srgb,var(--accent) 14%,var(--panel));color:var(--accent);font-size:20px}
+.options-grid .setting{gap:14px;padding:12px 0}
+.options-grid .setting>div{min-width:0}
+.options-grid .setting strong{font-size:12px}
+.options-grid .setting small{font-size:10px;line-height:1.5}
+.options-grid .setting .field{width:145px;max-width:48%;font-size:11px}
+.options-grid input[type=color]{width:48px;height:34px;border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:3px;cursor:pointer}
+.options-grid input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+.options-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px;border:1px solid var(--line);border-radius:13px;background:var(--bg);font-size:11px}
+.preview-dot{width:12px;height:12px;border-radius:50%;background:var(--preview-accent,var(--accent));box-shadow:0 0 16px var(--preview-accent,var(--glow))}
+.options-preview .button{margin-left:auto;background:var(--preview-accent,var(--accent));border-color:var(--preview-accent,var(--accent))}
+.options-note{margin:12px 0 0;color:var(--muted);font-size:10px}
+.options-actions{margin-top:18px}
+.dense-ui .settings-grid{gap:10px}.dense-ui .settings-card{padding:14px}.dense-ui .setting{padding:8px 0}
+.flat-ui .settings-card,.flat-ui .options-toolbar,.flat-ui .options-preview,.flat-ui .options-icon{border-radius:3px}
+.no-hover-effects .nav-link,.no-hover-effects .game-card,.no-hover-effects .feature-card,.no-hover-effects .settings-card,.no-hover-effects .home-shortcut>span{transition:none!important}
+.no-hover-effects .game-card:hover,.no-hover-effects .feature-card:hover,.no-hover-effects .settings-card:hover,.no-hover-effects .home-shortcut:hover>span{transform:none!important;box-shadow:none!important}
+.no-page-transitions .page,.no-page-transitions .page-heading{animation:none!important}
+.ambient-bg body,.ambient-bg{background-image:radial-gradient(ellipse at 75% -20%,#b17a1c12,transparent 48%)}
+.plain-bg body,.plain-bg{background-image:none!important}
+.no-status-label .status-label,.no-status-label .online-count{display:none!important}
+@media(max-width:760px){.options-grid{grid-template-columns:1fr}.options-toolbar{align-items:flex-start}.options-grid .setting .field{max-width:52%}}
