@@ -25,37 +25,34 @@ export default {
       if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
       const origin = request.headers.get("Origin");
       if (origin && origin !== url.origin) return Response.json({ error: "Cross-origin requests are not allowed." }, { status: 403 });
-      if (!env.RESEND_API_KEY || !env.BUG_REPORT_FROM) {
-        return Response.json({ error: "Bug-report email is not configured yet. The site owner must add RESEND_API_KEY and BUG_REPORT_FROM to the Worker environment." }, { status: 503 });
-      }
+      if (!env.RESEND_API_KEY || !env.BUG_REPORT_FROM) return Response.json({ error: "Feedback email is not configured yet. The site owner must add RESEND_API_KEY and BUG_REPORT_FROM to the Worker environment." }, { status: 503 });
+      const raw = await request.text();
+      if (raw.length > 9_000_000) return Response.json({ error: "Feedback and attachments are too large. Reduce the image sizes and try again." }, { status: 413 });
       let report;
-      try { report = await request.json(); } catch { return Response.json({ error: "Invalid report data." }, { status: 400 }); }
+      try { report = JSON.parse(raw); } catch { return Response.json({ error: "Invalid feedback data." }, { status: 400 }); }
       if (typeof report.website === "string" && report.website.trim()) return Response.json({ ok: true });
       const clean = (value, max) => typeof value === "string" ? value.trim().slice(0, max) : "";
-      const category = clean(report.category, 60);
-      const title = clean(report.title, 100);
-      const details = clean(report.details, 5000);
-      const page = clean(report.page, 300);
+      const category = clean(report.category, 60), title = clean(report.title, 100), details = clean(report.details, 15000), page = clean(report.page, 300);
       const allowed = ["Bug","Visual issue","Performance","Game compatibility","AI issue","Suggestion","Other feedback"];
       if (!allowed.includes(category) || !title || !details) return Response.json({ error: "Choose a category and provide a title and details." }, { status: 400 });
-      const text = "Solaris bug report\n\nCategory: " + category + "\nTitle: " + title + "\nPage: " + page + "\n\nDetails:\n" + details;
+      const images = Array.isArray(report.images) ? report.images : [];
+      if (images.length > 3) return Response.json({ error: "Attach no more than 3 images." }, { status: 400 });
+      const attachments = [], allowedTypes = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
+      for (const image of images) {
+        if (!image || typeof image.data !== "string" || !allowedTypes[image.type] || image.data.length > 2_850_000 || !/^[A-Za-z0-9+/]*={0,2}$/.test(image.data)) return Response.json({ error: "One of the attached images is invalid or too large." }, { status: 400 });
+        attachments.push({ filename: clean(image.name, 100) || ("feedback-image." + allowedTypes[image.type]), content: image.data });
+      }
+      const text = "Solaris feedback\n\nCategory: " + category + "\nTitle: " + title + "\nPage: " + page + "\n\nDetails:\n" + details + (attachments.length ? "\n\nAttached images: " + attachments.map(file => file.filename).join(", ") : "");
       try {
         const sent = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: { "Authorization": "Bearer " + env.RESEND_API_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({
-            from: env.BUG_REPORT_FROM,
-            to: ["ztaylor31@salesian.vic.edu.au", "occularpixel.zac@gmail.com"],
-            subject: "[Solaris] " + category + ": " + title,
-            text
-          })
+          body: JSON.stringify({ from: env.BUG_REPORT_FROM, to: ["ztaylor31@salesian.vic.edu.au", "occularpixel.zac@gmail.com"], subject: "[Solaris Feedback] " + category + ": " + title, text, ...(attachments.length ? { attachments } : {}) })
         });
         const result = await sent.json().catch(() => ({}));
-        if (!sent.ok) return Response.json({ error: "Email provider rejected the report. Check the Worker email configuration." }, { status: 502 });
+        if (!sent.ok) return Response.json({ error: "Email provider rejected the feedback. Check the Worker email configuration and attachment limits." }, { status: 502 });
         return Response.json({ ok: true, id: result.id || null }, { headers: { "Cache-Control": "no-store" } });
-      } catch {
-        return Response.json({ error: "Could not contact the email provider. Try again later." }, { status: 502 });
-      }
+      } catch { return Response.json({ error: "Could not contact the email provider. Try again later." }, { status: 502 }); }
     }
 
 
