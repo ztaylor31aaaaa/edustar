@@ -135,7 +135,7 @@ body.nav-bottom .player-shell{bottom:90px}
 
 /* SunsetOS refresh — compact navigation, centered launcher, AI chat workspace */
 :root{--bg:#10090d;--panel:#1b1016;--panel2:#25151d;--line:#38212c;--text:#fff2f5;--muted:#b99eaa;--accent:#ffd23f;--accent2:#ffe58a;--glow:#ffd23f33}
-body{background:radial-gradient(ellipse at 50% -20%,#9c335b26,transparent 48%),radial-gradient(circle at 1px 1px,#ffffff0c 1px,transparent 0) 0 0/28px 28px,var(--bg);transition:background .3s,color .3s}
+body{background:radial-gradient(ellipse at 50% -20%,#17140f26,transparent 48%),radial-gradient(circle at 1px 1px,#ffffff0c 1px,transparent 0) 0 0/28px 28px,var(--bg);transition:background .3s,color .3s}
 .layout{grid-template-columns:76px minmax(0,1fr)}
 .sidebar{width:76px;padding:17px 10px;overflow-x:hidden;overflow-y:auto;z-index:40;transition:width .22s ease,box-shadow .22s ease}
 .sidebar:hover{position:fixed;left:0;top:0;bottom:0;width:248px;box-shadow:18px 0 50px #0008}
@@ -255,7 +255,7 @@ body{background:radial-gradient(ellipse at 50% -20%,#9c335b26,transparent 48%),r
 .game-grid.cards-layout .game-body p{min-height:0}
 /* Light mode overrides */
 .light{color-scheme:light;--bg:#f7f3ed;--panel:#fffdfa;--panel2:#f1e9df;--line:#e2d8ce;--text:#29232a;--muted:#776b73;--accent:#e9ad18;--accent2:#98670a;--glow:#e9ad1833}
-.light body{background:radial-gradient(ellipse at 50% -20%,#e6b8c733,transparent 48%),#f7f3ed}
+.light body{background:radial-gradient(ellipse at 50% -20%,#fff8e933,transparent 48%),#f7f3ed}
 .light .sidebar,.light .topbar{background:#fffdf9ee}
 .light .sidebar{border-right-color:var(--line)}
 .light .game-card,.light .settings-card,.light .feature-card,.light .ai-history-sidebar,.light .ai-main-panel{background:#fffdfa}
