@@ -691,3 +691,10 @@ body{background-image:radial-gradient(ellipse at 78% -18%,#b17a1c18,transparent 
 .theme-choice.active{background:color-mix(in srgb,var(--accent) 16%,var(--panel));border-color:var(--accent);color:var(--text);box-shadow:0 0 0 2px var(--glow)}
 .theme-choice:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 @media(max-width:520px){.theme-choice-group{width:100%}.theme-choice{flex:1;min-width:0}}
+
+
+/* Solaris banding fix: use a clean, flat application canvas */
+html,body{background:#11100d!important;background-image:none!important;background-attachment:initial!important}
+body.light,body.light #app-layout{background:#fffaf0!important;background-image:none!important}
+#app-layout,.main,.page{background-image:none!important}
+html::before,html::after,body::before,body::after,#app-layout::before,#app-layout::after{content:none!important;display:none!important;background:none!important;box-shadow:none!important;filter:none!important}
