@@ -277,8 +277,8 @@ body{background:radial-gradient(ellipse at 50% -20%,#17140f26,transparent 48%),r
 @media(prefers-reduced-motion:reduce){.home-brand-mark,.home-search,.ai-message{animation:none}}
 
 /* SunsetOS visual refresh */
-:root{--accent:#f4bd38;--accent2:#ffe39a;--bg:#100d0e;--panel:#1b1517;--panel2:#281d20;--line:#38282c;--muted:#b59ca2;--glow:#f4bd3830}
-body{background:radial-gradient(ellipse at 50% -18%,#5a303d55,transparent 48%),radial-gradient(circle at 10% 70%,#3b202b22,transparent 35%),var(--bg)}
+:root{--accent:#f4bd38;--accent2:#ffe39a;--bg:#100f0d;--panel:#17140f;--panel2:#211c14;--line:#382f23;--muted:#b6a98f;--glow:#f4bd3830}
+body{background:radial-gradient(ellipse at 50% -18%,#17140f55,transparent 48%),radial-gradient(circle at 10% 70%,#17140f22,transparent 35%),var(--bg)}
 /* Compact icon rail; hover or keyboard focus expands it. */
 body:not(.nav-top):not(.nav-bottom) .layout{grid-template-columns:72px minmax(0,1fr);transition:grid-template-columns .26s cubic-bezier(.2,.8,.2,1)}
 body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:hover),body:not(.nav-top):not(.nav-bottom) .layout:has(.sidebar:focus-within){grid-template-columns:246px minmax(0,1fr)}
