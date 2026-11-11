@@ -68,7 +68,41 @@ function showWikiTab(){
  page.innerHTML='<div class="wiki-reader"><div class="wiki-reader-toolbar"><button class="button secondary" data-action="wiki-back-search">← Search</button><span>WIKIPEDIA ARTICLE</span><a href="https://en.wikipedia.org/wiki/'+encodeURIComponent(tab.key)+'" target="_blank" rel="noopener noreferrer">View source ↗</a></div><article class="wiki-article">'+tab.html+'</article></div>';
  document.querySelectorAll(".nav-link[data-view]").forEach(b=>b.classList.remove("active"));renderWikiTabs();
 }
-async function runWikiSearch(query,statusSelector="#wiki-search-status",resultsSelector="#wiki-search-results"){const q=String(query||"").trim().slice(0,160),status=$(statusSelector),results=$(resultsSelector);if(!q||!status||!results)return;status.textContent="Searching Wikipedia…";results.innerHTML="";try{const response=await fetch("/api/search/wikipedia?q="+encodeURIComponent(q),{headers:{"Accept":"application/json"}});const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||"Wikipedia search is temporarily unavailable.");const pages=Array.isArray(data.pages)?data.pages:[];if(!pages.length){status.textContent="No Wikipedia results found. Try another search.";return}status.textContent=pages.length+" results from Wikipedia";results.innerHTML=pages.map(item=>'<button type="button" class="wiki-result" data-wiki-open="'+esc(item.key||item.title.replace(/ /g,"_"))+'" data-wiki-title="'+esc(item.title)+'">'+(item.thumbnail?'<img src="'+esc(item.thumbnail)+'" alt="" loading="lazy">':'<span class="wiki-result-icon">W</span>')+'<span><strong>'+esc(item.title)+'</strong><small>'+esc(item.description||"Wikipedia article")+'</small><span class="wiki-excerpt">'+esc(item.excerpt||"Open the article to read more.")+'</span></span><span class="wiki-result-arrow">↗</span></button>').join("")}catch(error){status.textContent=error.message||"Search failed."}}
+async function runWikiSearch(query,statusSelector="#wiki-search-status",resultsSelector="#wiki-search-results"){
+ const q=String(query||"").trim().slice(0,160),status=$(statusSelector),results=$(resultsSelector);if(!q||!status||!results)return;
+ const engine=settings().searchEngine==="wikipedia"?"wikipedia":"google";
+ status.textContent="Searching "+(engine==="google"?"Google":"Wikipedia")+"…";results.innerHTML="";
+ try{
+  const endpoint=engine==="google"?"/api/search/google?q=":"/api/search/wikipedia?q=";
+  const response=await fetch(endpoint+encodeURIComponent(q),{headers:{"Accept":"application/json"}});
+  const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||engine+" search is temporarily unavailable.");
+  if(engine==="wikipedia"){
+   const pages=Array.isArray(data.pages)?data.pages:[];if(!pages.length){status.textContent="No Wikipedia results found. Try another search.";return}
+   status.textContent=pages.length+" results from Wikipedia";
+   results.innerHTML=pages.map(item=>'<button type="button" class="wiki-result" data-wiki-open="'+esc(item.key||item.title.replace(/ /g,"_"))+'" data-wiki-title="'+esc(item.title)+'">'+(item.thumbnail?'<img src="'+esc(item.thumbnail)+'" alt="" loading="lazy">':'<span class="wiki-result-icon">W</span>')+'<span><strong>'+esc(item.title)+'</strong><small>'+esc(item.description||"Wikipedia article")+'</small><span class="wiki-excerpt">'+esc(item.excerpt||"Open the article to read more.")+'</span></span><span class="wiki-result-arrow">↗</span></button>').join("");
+  }else{
+   const items=Array.isArray(data.results)?data.results:[];if(!items.length){status.textContent="No results were returned. Try another search.";return}
+   status.textContent=items.length+" Google results";
+   results.innerHTML=items.map(item=>'<button type="button" class="wiki-result web-result" data-proxy-open="'+esc(item.url)+'" data-proxy-title="'+esc(item.title)+'"><span class="wiki-result-icon">G</span><span><strong>'+esc(item.title)+'</strong><small>'+esc(item.domain||"Website")+'</small><span class="wiki-excerpt">'+esc(item.snippet||item.url)+'</span></span><span class="wiki-result-arrow">↗</span></button>').join("");
+  }
+ }catch(error){status.textContent=error.message||"Search failed."}
+}
+async function openProxyPage(url,title){
+ let parsed;try{parsed=new URL(url)}catch{toast("That website address is invalid.");return}
+ if(parsed.protocol!=="https:"){toast("Only secure HTTPS pages can be opened in Solaris.");return}
+ const existing=webTabs.find(t=>t.url===parsed.href);if(existing){activeWebTab=existing.id;activeWikiTab=null;showProxyTab();return}
+ const id=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+ const tab={id:id,url:parsed.href,title:String(title||parsed.hostname).slice(0,100),text:"Loading page through Solaris proxy…"};webTabs.push(tab);activeWebTab=id;activeWikiTab=null;renderWikiTabs();showProxyTab();
+ try{const response=await fetch("/api/proxy/read?url="+encodeURIComponent(parsed.href),{headers:{"Accept":"text/plain"}});const body=await response.text();if(!response.ok)throw Error(body||"The page could not be loaded.");tab.text=body.slice(0,120000);const heading=tab.text.match(/^Title:\s*(.+)$/m);if(heading)tab.title=heading[1].slice(0,100)}
+ catch(error){tab.text="Solaris could not load this page.\n\n"+(error.message||"Proxy request failed.")+"\n\nYou can still open the original page in a separate browser tab.";tab.error=true}
+ if(activeWebTab===id)showProxyTab();
+}
+function showProxyTab(){
+ const tab=webTabs.find(t=>t.id===activeWebTab);if(!tab)return;
+ currentView="proxy-reader";shell.hidden=true;page.hidden=false;$("#view-name").textContent=tab.title;
+ page.innerHTML='<div class="proxy-reader"><div class="proxy-reader-toolbar"><button class="button secondary" data-action="wiki-back-search">← Search</button><span>'+esc(new URL(tab.url).hostname)+'</span><a href="'+esc(tab.url)+'" target="_blank" rel="noopener noreferrer">Open original ↗</a></div><article class="proxy-article">'+esc(tab.text)+'</article></div>';
+ document.querySelectorAll(".nav-link[data-view]").forEach(b=>b.classList.remove("active"));renderWikiTabs();
+}
 function pageRender(){let html="",title="Home",s=settings(),all=sorted(games);
 if(currentView==="home"){html='<section class="sunset-home"><div class="home-brand-mark"><span>solaris</span><small>YOUR SPACE TO PLAY & CREATE</small></div><form class="home-search" id="home-search-form"><span>⌕</span><input id="home-search" type="search" placeholder="Search Google or Wikipedia..." autocomplete="off" maxlength="160"><button type="submit" class="home-search-submit" title="Search the web" aria-label="Search the web">⌕</button><button type="button" class="home-ai-search" data-action="home-search-ai" title="Ask AI">✧</button></form><div id="home-wiki-search-status" class="wiki-search-status" role="status">Search the web using Wikipedia results.</div><div id="home-wiki-search-results" class="wiki-search-results"></div><div class="home-shortcuts"><button class="home-shortcut" data-view="games"><span class="game-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" role="img" focusable="false"><path d="M7.2 8.2h9.6a3.1 3.1 0 0 1 3 2.5l1 5.1a2.2 2.2 0 0 1-3.7 2l-2.1-2H9l-2.1 2a2.2 2.2 0 0 1-3.7-2l1-5.1a3.1 3.1 0 0 1 3-2.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 11v4m-2-2h4m6-1h.01M18 14h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><b>Games</b></button><button class="home-shortcut" data-view="ai"><span>✧</span><b>AI</b></button><button class="home-shortcut" data-view="my-library"><span>▦</span><b>My library</b></button><button class="home-shortcut" data-view="favourites"><span>☆</span><b>Favourites</b></button><button class="home-shortcut" data-view="settings"><span>＋</span><b>Settings</b></button></div><div class="home-date-card"><strong id="home-clock">--:--</strong><span id="home-date">Loading date…</span></div></section>'}
 else if(["games","my-library","favourites","recent"].includes(currentView)){title=currentView==="games"?"Game library":currentView==="favourites"?"Favourites":currentView==="recent"?"Recently played":"Game marketplace";let a=all;if(currentView==="my-library")a=a.filter(g=>list("sunset_library").includes(g.id));if(currentView==="favourites")a=a.filter(g=>favs().includes(g.id));if(currentView==="recent")a=recents().map(id=>games.find(g=>g.id===id)).filter(Boolean);
