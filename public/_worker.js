@@ -75,34 +75,79 @@ export default {
       if (request.method !== "GET") return Response.json({ error: "GET required." }, { status: 405 });
       const query = (url.searchParams.get("q") || "").trim().slice(0, 160);
       if (!query) return Response.json({ error: "Enter a search term." }, { status: 400 });
+      const decode = value => value
+        .replace(/&amp;/g, "&").replace(/&#39;|&#x27;/gi, "'")
+        .replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+        .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+        .replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
+      const clean = value => decode(value.replace(/<[^>]*>/g, " ")).replace(/\\s+/g, " ").trim();
       try {
-        const upstreamUrl = new URL("https://www.google.com/search");
-        upstreamUrl.searchParams.set("q", query);
-        upstreamUrl.searchParams.set("num", "10");
-        upstreamUrl.searchParams.set("gbv", "1");
-        const upstream = await fetch(upstreamUrl, {
-          headers: { "Accept": "text/html", "Accept-Language": "en-AU,en;q=0.9", "User-Agent": "Mozilla/5.0 (compatible; SolarisSearch/1.0)" },
+        const googleUrl = new URL("https://www.google.com/search");
+        googleUrl.searchParams.set("q", query);
+        googleUrl.searchParams.set("num", "10");
+        googleUrl.searchParams.set("gbv", "1");
+        let results = [];
+        let googleError = "";
+        try {
+          const upstream = await fetch(googleUrl, {
+            headers: { "Accept": "text/html", "Accept-Language": "en-AU,en;q=0.9", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0.0.0 Safari/537.36" },
+            cf: { cacheTtl: 120, cacheEverything: true }
+          });
+          if (!upstream.ok) googleError = "Google returned HTTP " + upstream.status;
+          else {
+            const html = await upstream.text();
+            const pattern = /<a[^>]+href="([^"]+)"[^>]*>[\\s\\S]{0,1800}?<h3[^>]*>([\\s\\S]*?)<\\/h3>/gi;
+            let match;
+            while ((match = pattern.exec(html)) && results.length < 10) {
+              let target;
+              try {
+                const resolved = new URL(decode(match[1]), "https://www.google.com");
+                const destination = resolved.pathname === "/url" ? resolved.searchParams.get("q") || resolved.searchParams.get("url") : resolved.href;
+                target = new URL(destination);
+              } catch { continue; }
+              if (!["http:", "https:"].includes(target.protocol) || target.hostname.endsWith("google.com")) continue;
+              const title = clean(match[2]);
+              if (!title || results.some(item => item.url === target.href)) continue;
+              const context = html.slice(match.index, Math.min(html.length, pattern.lastIndex + 1200));
+              const snippet = clean(context.match(/<div[^>]*>([\\s\\S]{0,1000}?)<\\/div>/i)?.[1] || "").slice(0, 320);
+              results.push({ title: title.slice(0, 180), url: target.href, domain: target.hostname, snippet });
+            }
+          }
+        } catch (error) { googleError = "Google request failed"; }
+        if (results.length) {
+          return Response.json({ results, provider: "Google" }, { headers: { "Cache-Control": "public, max-age=120" } });
+        }
+
+        // Google can block automated requests or change its HTML. Fall back to DuckDuckGo HTML results.
+        const fallbackUrl = new URL("https://html.duckduckgo.com/html/");
+        fallbackUrl.searchParams.set("q", query);
+        const fallback = await fetch(fallbackUrl, {
+          headers: { "Accept": "text/html", "Accept-Language": "en-AU,en;q=0.9", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0.0.0 Safari/537.36" },
           cf: { cacheTtl: 120, cacheEverything: true }
         });
-        if (!upstream.ok) return Response.json({ error: "Google search returned HTTP " + upstream.status + "." }, { status: 502 });
-        const html = await upstream.text();
-        const results = [];
-        const pattern = /<a[^>]+href="([^"]+)"[^>]*>[\s\S]{0,1800}?<h3[^>]*>([\s\S]*?)<\/h3>/gi;
+        if (!fallback.ok) return Response.json({ error: "Google was unavailable and the backup search returned HTTP " + fallback.status + "." }, { status: 502 });
+        const html = await fallback.text();
+        const pattern = /<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]+)"[^>]*>([\\s\\S]*?)<\\/a>/gi;
         let match;
         while ((match = pattern.exec(html)) && results.length < 10) {
           let target;
-          try { const rawHref = match[1].replace(/&amp;/g, "&"); const resolved = new URL(rawHref, "https://www.google.com"); const destination = resolved.pathname === "/url" ? resolved.searchParams.get("q") || resolved.searchParams.get("url") : resolved.href; target = new URL(destination); } catch { continue; }
-          if (!["http:", "https:"].includes(target.protocol) || target.hostname.endsWith("google.com")) continue;
-          const title = match[2].replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&#x27;/gi, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\s+/g, " ").trim();
+          try {
+            const href = decode(match[1]);
+            const resolved = new URL(href.startsWith("//") ? "https:" + href : href, "https://html.duckduckgo.com");
+            const destination = resolved.searchParams.get("uddg") || resolved.searchParams.get("url") || resolved.href;
+            target = new URL(destination);
+          } catch { continue; }
+          if (!["http:", "https:"].includes(target.protocol) || target.hostname.endsWith("duckduckgo.com")) continue;
+          const title = clean(match[2]);
           if (!title || results.some(item => item.url === target.href)) continue;
-          const context = html.slice(match.index, Math.min(html.length, pattern.lastIndex + 1200));
-          const snippet = (context.match(/<div[^>]*>([\s\S]{0,1000}?)<\/div>/i)?.[1] || "").replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&#x27;/gi, "'").replace(/&quot;/g, '"').replace(/\s+/g, " ").trim().slice(0, 320);
-          results.push({ title: title.slice(0, 180), url: target.href, domain: target.hostname, snippet });
+          const context = html.slice(match.index, Math.min(html.length, pattern.lastIndex + 1800));
+          const snippetMatch = context.match(/class="[^"]*result__snippet[^"]*"[^>]*>([\\s\\S]*?)<\\/[^>]+>/i);
+          results.push({ title: title.slice(0, 180), url: target.href, domain: target.hostname, snippet: clean(snippetMatch?.[1] || "").slice(0, 320) });
         }
-        if (!results.length) return Response.json({ error: "Google did not return readable results. Try again, or switch to Wikipedia in Settings." }, { status: 502 });
-        return Response.json({ results }, { headers: { "Cache-Control": "public, max-age=120" } });
+        if (!results.length) return Response.json({ error: "Google could not provide results, and the backup search returned no readable results. Try Wikipedia or search again later." }, { status: 502 });
+        return Response.json({ results, provider: "DuckDuckGo", fallback: true, notice: googleError || "Google results could not be read." }, { headers: { "Cache-Control": "public, max-age=120" } });
       } catch {
-        return Response.json({ error: "Could not contact Google. Try again shortly." }, { status: 502 });
+        return Response.json({ error: "Could not contact the search services. Try again shortly." }, { status: 502 });
       }
     }
 
