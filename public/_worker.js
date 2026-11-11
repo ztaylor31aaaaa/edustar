@@ -154,30 +154,69 @@ export default {
     if (url.pathname === "/api/proxy/read") {
       if (request.method !== "GET") return new Response("GET required.", { status: 405 });
       const raw = url.searchParams.get("url") || "";
-      let target;
-      try { target = new URL(raw); } catch { return new Response("Invalid website address.", { status: 400 }); }
-      const host = target.hostname.toLowerCase();
-      const blockedHost = !host || host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") ||
-        host === "metadata.google.internal" || host === "169.254.169.254" ||
-        /^(127\.|10\.|192\.168\.|0\.|169\.254\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(host) ||
-        host.includes(":") || /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
-      if (target.protocol !== "https:" || target.username || target.password || target.port && target.port !== "443" || blockedHost) {
-        return new Response("Only public HTTPS websites on the standard port can be opened.", { status: 400 });
-      }
+      const isPublicHttps = value => {
+        let parsed;
+        try { parsed = new URL(value); } catch { return false; }
+        const host = parsed.hostname.toLowerCase();
+        const blockedHost = !host || host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") ||
+          host === "metadata.google.internal" || host === "169.254.169.254" ||
+          /^(127\\.|10\\.|192\\.168\\.|0\\.|169\\.254\\.|172\\.(1[6-9]|2[0-9]|3[01])\\.)/.test(host) ||
+          host.includes(":") || /^\\d{1,3}(\\.\\d{1,3}){3}$/.test(host);
+        return parsed.protocol === "https:" && !parsed.username && !parsed.password &&
+          (!parsed.port || parsed.port === "443") && !blockedHost;
+      };
+      if (!isPublicHttps(raw)) return new Response("Only public HTTPS websites on the standard port can be opened.", { status: 400 });
       try {
-        const readerUrl = "https://r.jina.ai/http://" + target.hostname + target.pathname + target.search;
-        const upstream = await fetch(readerUrl, {
-          headers: { "Accept": "text/plain", "User-Agent": "SolarisBrowser/1.0" },
-          cf: { cacheTtl: 300, cacheEverything: true }
+        let target = new URL(raw);
+        let upstream = await fetch(target.href, {
+          headers: { "Accept": "text/html,application/xhtml+xml,text/plain;q=0.9,*/*;q=0.5", "User-Agent": "Mozilla/5.0 (compatible; SolarisReader/1.0)" },
+          redirect: "manual",
+          cf: { cacheTtl: 180, cacheEverything: true }
         });
-        if (!upstream.ok) return new Response("Reader service returned HTTP " + upstream.status + ".", { status: 502 });
-        const body = await upstream.text();
-        if (!body || body.length > 500000) return new Response("The page was empty or too large for reader mode.", { status: 502 });
-        return new Response(body.slice(0, 120000), {
-          headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=300", "X-Content-Type-Options": "nosniff" }
+        if (upstream.status >= 300 && upstream.status < 400) {
+          const location = upstream.headers.get("Location");
+          if (!location) return new Response("This website redirected without providing a destination.", { status: 502 });
+          const redirected = new URL(location, target);
+          if (!isPublicHttps(redirected.href)) return new Response("The website redirected to an address Solaris cannot open.", { status: 502 });
+          target = redirected;
+          upstream = await fetch(target.href, {
+            headers: { "Accept": "text/html,application/xhtml+xml,text/plain;q=0.9,*/*;q=0.5", "User-Agent": "Mozilla/5.0 (compatible; SolarisReader/1.0)" },
+            redirect: "manual",
+            cf: { cacheTtl: 180, cacheEverything: true }
+          });
+        }
+        if (!upstream.ok) return new Response("The website returned HTTP " + upstream.status + ". Some websites block proxy readers.", { status: 502 });
+        const contentType = upstream.headers.get("Content-Type") || "";
+        if (!/text\\/(html|plain)|application\\/(xhtml\\+xml|xml)/i.test(contentType)) {
+          return new Response("This page is not an HTML or text page that reader mode can display.", { status: 415 });
+        }
+        const source = await upstream.text();
+        if (!source || source.length > 2_000_000) return new Response("The page was empty or too large for reader mode.", { status: 502 });
+        if (/text\\/plain/i.test(contentType)) {
+          return new Response(source.slice(0, 120000), {
+            headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=180", "X-Content-Type-Options": "nosniff" }
+          });
+        }
+        const decode = value => value
+          .replace(/&nbsp;|&#160;/gi, " ")
+          .replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">")
+          .replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'")
+          .replace(/&#(\\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+          .replace(/&#x([\\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
+        const title = decode((source.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i) || [,""])[1].replace(/<[^>]*>/g, " ").replace(/\\s+/g, " ").trim());
+        let readable = source
+          .replace(/<!--[\\s\\S]*?-->/g, " ")
+          .replace(/<(script|style|noscript|svg|canvas|iframe|form|nav|footer|header|aside)[^>]*>[\\s\\S]*?<\\/\\1\\s*>/gi, " ")
+          .replace(/<(br|\\/p|\\/div|\\/article|\\/section|\\/h[1-6]|li|\\/li|\\/tr|\\/blockquote)[^>]*>/gi, "\\n")
+          .replace(/<[^>]+>/g, " ");
+        readable = decode(readable).replace(/\\r/g, "").replace(/[ \\t]+/g, " ").replace(/ *\\n */g, "\\n").replace(/\\n{3,}/g, "\\n\\n").trim();
+        if (!readable) return new Response("Solaris could not find readable text on this page.", { status: 502 });
+        const output = (title ? title + "\\n\\n" : "") + readable;
+        return new Response(output.slice(0, 120000), {
+          headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=180", "X-Content-Type-Options": "nosniff" }
         });
       } catch {
-        return new Response("The proxy reader could not retrieve this website.", { status: 502 });
+        return new Response("Solaris could not retrieve this website. The site may block automated requests.", { status: 502 });
       }
     }
 
