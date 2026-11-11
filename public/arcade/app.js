@@ -50,6 +50,7 @@ function renderWikiTabs(){
  list.innerHTML=wikiTabs.map(tab=>'<div class="wiki-tab '+(tab.id===activeWikiTab&&currentView==="wiki-reader"?"active":"")+'"><button type="button" class="wiki-tab-select" data-wiki-tab="'+esc(tab.id)+'" title="'+esc(tab.title)+'">◉ '+esc(tab.title)+'</button><button type="button" class="wiki-tab-close" data-wiki-close="'+esc(tab.id)+'" aria-label="Close '+esc(tab.title)+'">×</button></div>').join("")+webTabs.map(tab=>'<div class="wiki-tab '+(tab.id===activeWebTab&&currentView==="proxy-reader"?"active":"")+'"><button type="button" class="wiki-tab-select" data-web-tab="'+esc(tab.id)+'" title="'+esc(tab.title)+'">◎ '+esc(tab.title)+'</button><button type="button" class="wiki-tab-close" data-web-close="'+esc(tab.id)+'" aria-label="Close '+esc(tab.title)+'">×</button></div>').join("");
 }
 async function openWikiPage(title,key){
+ activeWebTab=null;
  const cleanTitle=String(title||"").trim().slice(0,180),cleanKey=String(key||cleanTitle.replace(/ /g,"_")).trim().slice(0,240);if(!cleanTitle)return;
  const existing=wikiTabs.find(t=>t.key.toLowerCase()===cleanKey.toLowerCase());
  if(existing){activeWikiTab=existing.id;showWikiTab();return}
