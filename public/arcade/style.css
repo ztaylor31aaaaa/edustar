@@ -849,3 +849,5 @@ body.nav-top .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar .wiki-new-tab,bo
  .wiki-tab{min-width:0}
  .wiki-tab-select{font-size:10px;padding-left:8px}
 }
+
+.wiki-tabbar[hidden]{display:none!important}
