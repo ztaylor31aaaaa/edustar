@@ -91,21 +91,22 @@ export default {
       const origin = request.headers.get("Origin");
       if (origin && origin !== url.origin) return Response.json({ error: "Cross-origin requests are not allowed." }, { status: 403 });
       if (request.headers.get("Sec-Fetch-Site") === "cross-site") return Response.json({ error: "Cross-site requests are not allowed." }, { status: 403 });
-      if (!env.ACCESS_GUARD_SECRET) return Response.json({ error: "Access protection is not configured. Add ACCESS_GUARD_SECRET to the Worker secrets." }, { status: 503 });
+      const guardSecret = env.ACCESS_GUARD_SECRET || env.DEV_CODE_SECRET;
+      if (!guardSecret) return Response.json({ error: "Access protection is not configured. Add ACCESS_GUARD_SECRET to the Worker secrets (or configure DEV_CODE_SECRET)." }, { status: 503 });
       let data;
       try { data = await request.json(); } catch { return Response.json({ error: "Invalid request." }, { status: 400 }); }
       const type = data?.type === "solaris" ? "solaris" : data?.type === "game" ? "game" : "";
       if (!type || typeof data.code !== "string" || data.code.length > 300) return Response.json({ error: "Invalid access request." }, { status: 400 });
-      const configuredCode = type === "game" ? env.GAME_ACCESS_CODE : env.SOLARIS_ACCESS_CODE;
+      const configuredCode = type === "game" ? (env.GAME_ACCESS_CODE || "stupidlyakward") : env.SOLARIS_ACCESS_CODE;
       if (!configuredCode) return Response.json({ error: type === "game" ? "The class access code is not configured on the Worker." : "The Solaris access code is not configured on the Worker." }, { status: 503 });
-      const state = await readGuardState(request, env.ACCESS_GUARD_SECRET);
+      const state = await readGuardState(request, guardSecret);
       const now = Date.now();
       const entry = state[type] && typeof state[type] === "object" ? state[type] : { count: 0, until: 0 };
       if (Number(entry.until) > now) return Response.json({ error: "Too many incorrect attempts. This browser is locked out for 24 hours.", locked: true }, { status: 429, headers: { "Cache-Control": "no-store" } });
       if (String(data.code).trim() !== String(configuredCode).trim()) {
         const count = Math.min(3, Math.max(0, Number(entry.count) || 0) + 1);
         state[type] = { count, until: count >= 3 ? now + 86400000 : 0 };
-        const signed = await signGuardState(state, env.ACCESS_GUARD_SECRET);
+        const signed = await signGuardState(state, guardSecret);
         const locked = count >= 3;
         return Response.json({ error: locked ? "Three incorrect attempts. This browser is locked out for 24 hours." : "That code wasn't recognised. Try again.", locked, attemptsRemaining: Math.max(0, 3 - count) }, {
           status: locked ? 429 : 401,
