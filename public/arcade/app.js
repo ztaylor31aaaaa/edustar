@@ -83,8 +83,8 @@ async function runWikiSearch(query,statusSelector="#wiki-search-status",resultsS
    results.innerHTML=pages.map(item=>'<button type="button" class="wiki-result" data-wiki-open="'+esc(item.key||item.title.replace(/ /g,"_"))+'" data-wiki-title="'+esc(item.title)+'">'+(item.thumbnail?'<img src="'+esc(item.thumbnail)+'" alt="" loading="lazy">':'<span class="wiki-result-icon">W</span>')+'<span><strong>'+esc(item.title)+'</strong><small>'+esc(item.description||"Wikipedia article")+'</small><span class="wiki-excerpt">'+esc(item.excerpt||"Open the article to read more.")+'</span></span><span class="wiki-result-arrow">↗</span></button>').join("");
   }else{
    const items=Array.isArray(data.results)?data.results:[];if(!items.length){status.textContent="No results were returned. Try another search.";return}
-   status.textContent=items.length+" Google results";
-   results.innerHTML=items.map(item=>'<button type="button" class="wiki-result web-result" data-proxy-open="'+esc(item.url)+'" data-proxy-title="'+esc(item.title)+'"><span class="wiki-result-icon">G</span><span><strong>'+esc(item.title)+'</strong><small>'+esc(item.domain||"Website")+'</small><span class="wiki-excerpt">'+esc(item.snippet||item.url)+'</span></span><span class="wiki-result-arrow">↗</span></button>').join("");
+   status.textContent=items.length+" "+(data.provider||"Web")+" results"+(data.fallback?" (backup search)":"");
+   results.innerHTML=items.map(item=>'<button type="button" class="wiki-result web-result" data-proxy-open="'+esc(item.url)+'" data-proxy-title="'+esc(item.title)+'"><span class="wiki-result-icon">'+(data.provider==="DuckDuckGo"?"D":"G")+'</span><span><strong>'+esc(item.title)+'</strong><small>'+esc(item.domain||"Website")+'</small><span class="wiki-excerpt">'+esc(item.snippet||item.url)+'</span></span><span class="wiki-result-arrow">↗</span></button>').join("");
   }
  }catch(error){status.textContent=error.message||"Search failed."}
 }
