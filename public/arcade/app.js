@@ -30,7 +30,7 @@ function cleanWikiHtml(raw){
   const el=document.createElement(tag.toLowerCase());
   if(tag==="A"){
    const href=node.getAttribute("href")||"";
-   if(href.startsWith("/wiki/")&&!href.includes(":")){el.dataset.wikiHref=href;el.href="#"}
+   if((href.startsWith("/wiki/")||href.startsWith("./"))&&!href.includes(":")){const wikiPath=href.startsWith("./")?"/wiki/"+href.slice(2):href;el.dataset.wikiHref=wikiPath;el.href="#"}
    else if(/^https:\/\//i.test(href)){el.href=href;el.target="_blank";el.rel="noopener noreferrer"}
    else return document.createDocumentFragment();
   }
