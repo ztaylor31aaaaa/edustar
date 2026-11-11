@@ -105,7 +105,7 @@ async function loadOwnedSiteFrame(tab,parsed){
   if(!response.ok)throw Error("The owned-site route returned HTTP "+response.status+".");
   let html=await response.text();
   if(!html.toLowerCase().includes("<html"))throw Error("That path did not return an HTML page.");
-  const bridge='<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("a[href]");if(!a)return;var u;try{u=new URL(a.href)}catch(_){return}if(u.origin!==location.origin||!u.pathname.startsWith("/owned-site/"))return;e.preventDefault();parent.postMessage({type:"solaris-owned-nav",url:u.href},"*")},true)})();<\\/script>';
+  const bridge='<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("a[href]");if(!a)return;var u;try{u=new URL(a.href)}catch(_){return}if(u.origin!==location.origin||!u.pathname.startsWith("/owned-site/"))return;e.preventDefault();parent.postMessage({type:"solaris-owned-nav",url:u.href},"*")},true)})();</script>';
   html=html.replace("</body>",bridge+"</body>");
   tab.frame.srcdoc=html;
  }catch(error){
