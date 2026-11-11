@@ -51,7 +51,7 @@ function renderWikiTabs(){
  list.innerHTML=appHtml+wikiTabs.map(tab=>'<div class="wiki-tab '+(tab.id===activeWikiTab&&currentView==="wiki-reader"?"active":"")+'"><button type="button" class="wiki-tab-select" data-wiki-tab="'+esc(tab.id)+'" title="'+esc(tab.title)+'">◉ '+esc(tab.title)+'</button><button type="button" class="wiki-tab-close" data-wiki-close="'+esc(tab.id)+'" aria-label="Close '+esc(tab.title)+'">×</button></div>').join("")+webTabs.map(tab=>'<div class="wiki-tab '+(tab.id===activeWebTab&&currentView==="proxy-reader"?"active":"")+'"><button type="button" class="wiki-tab-select" data-web-tab="'+esc(tab.id)+'" title="'+esc(tab.title)+'">◎ '+esc(tab.title)+'</button><button type="button" class="wiki-tab-close" data-web-close="'+esc(tab.id)+'" aria-label="Close '+esc(tab.title)+'">×</button></div>').join("");
 }
 async function openWikiPage(title,key){
- activeAppTab=null;activeWebTab=null;
+ stashActiveAppTab();activeAppTab=null;activeWebTab=null;
  const cleanTitle=String(title||"").trim().slice(0,180),cleanKey=String(key||cleanTitle.replace(/ /g,"_")).trim().slice(0,240);if(!cleanTitle)return;
  const existing=wikiTabs.find(t=>t.key.toLowerCase()===cleanKey.toLowerCase());
  if(existing){activeWikiTab=existing.id;showWikiTab();return}
@@ -65,7 +65,7 @@ async function openWikiPage(title,key){
  if(activeWikiTab===id)showWikiTab();
 }
 function showWikiTab(){
- const tab=wikiTabs.find(t=>t.id===activeWikiTab);if(!tab)return;activeAppTab=null;
+ const tab=wikiTabs.find(t=>t.id===activeWikiTab);if(!tab)return;stashActiveAppTab();activeAppTab=null;
  currentView="wiki-reader";shell.hidden=true;page.hidden=false;$("#view-name").textContent=tab.title;
  page.innerHTML='<div class="wiki-reader"><div class="wiki-reader-toolbar"><button class="button secondary" data-action="wiki-back-search">← Search</button><span>WIKIPEDIA ARTICLE</span><a href="https://en.wikipedia.org/wiki/'+encodeURIComponent(tab.key)+'" target="_blank" rel="noopener noreferrer">View source ↗</a></div><article class="wiki-article">'+tab.html+'</article></div>';
  document.querySelectorAll(".nav-link[data-view]").forEach(b=>b.classList.remove("active"));renderWikiTabs();
@@ -84,7 +84,7 @@ async function runWikiSearch(query,statusSelector="#wiki-search-status",resultsS
  }catch(error){status.textContent=error.message||"Search failed."}
 }
 async function openProxyPage(url,title){
- activeAppTab=null;
+ stashActiveAppTab();activeAppTab=null;
  let parsed;try{parsed=new URL(url)}catch{toast("Enter a valid website address.");return}
  if(!["https:","http:"].includes(parsed.protocol)||parsed.username||parsed.password){toast("Enter a normal HTTP or HTTPS website address.");return}
  const idExisting=webTabs.find(t=>t.url===parsed.href);
@@ -101,7 +101,7 @@ function loadProxyLocation(tab,url,title,record=true){
  if(activeWebTab===tab.id)showProxyTab();
 }
 function showProxyTab(){
- const tab=webTabs.find(t=>t.id===activeWebTab);if(!tab)return;activeAppTab=null;
+ const tab=webTabs.find(t=>t.id===activeWebTab);if(!tab)return;stashActiveAppTab();activeAppTab=null;
  currentView="proxy-reader";shell.hidden=true;page.hidden=false;$("#view-name").textContent=tab.title;
  const canBack=tab.historyIndex>0,canForward=tab.historyIndex<tab.history.length-1;
  page.innerHTML='<div class="proxy-reader"><div class="proxy-browser-toolbar"><button type="button" class="browser-control" data-browser-action="back" '+(!canBack?'disabled':'')+' title="Back">←</button><button type="button" class="browser-control" data-browser-action="forward" '+(!canForward?'disabled':'')+' title="Forward">→</button><button type="button" class="browser-control" data-browser-action="reload" title="Reload">↻</button><button type="button" class="browser-control" data-browser-action="home" title="Browser home">⌂</button><form class="browser-address-form" id="browser-address-form"><input id="browser-address" type="text" aria-label="Website address" value="'+esc(tab.url)+'" spellcheck="false"><button type="submit">Go</button></form></div><div class="proxy-browser-stage" id="proxy-browser-stage"></div></div>';
@@ -117,16 +117,27 @@ else if(currentView==="changelog"){title="Beta changelog";html=heading("SOLARIS 
 setPage(title,html)}
 function setPage(t,h){$("#view-name").textContent=t;page.innerHTML=h;document.querySelectorAll(".nav-link[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===currentView));applySettings();if(currentView==="settings"){const s=settings();const values={"scale":s.scale,"nav-position":s.navPosition,"search-engine":s.searchEngine,"library-layout":s.libraryLayout,"library-layout-2":s.libraryLayout,"clock24":s.clock24,"clock-seconds":s.clockSeconds,"accent":s.accent,"compact":s.compact,"animations":s.animations,"motion":s.motion,"desc":s.showDescriptions,"confirm":s.confirm,"background":s.background,"corners":s.corners,"density":s.density,"hover-effects":s.hoverEffects,"page-transitions":s.pageTransitions,"show-status":s.showStatus};for(const [id,value] of Object.entries(values)){const el=$("#s-"+id);if(el){if(el.type==="checkbox")el.checked=!!value;else el.value=value}}const preview=$(".options-preview");if(preview)preview.style.setProperty("--preview-accent",s.accent);}if(currentView==="ai")setupAI();if(currentView==="search"){const form=$("#wiki-search-form");form?.addEventListener("submit",async e=>{e.preventDefault();await runWikiSearch($("#wiki-search-input").value)});const params=new URLSearchParams(location.search);const initial=params.get("q");if(initial){$("#wiki-search-input").value=initial;runWikiSearch(initial)}}if(currentView==="games"){const q=$("#game-search"),sort=$("#game-sort"),category=$("#game-category-filter");const filter=()=>{const term=q.value.toLowerCase(),cat=category.value;const found=games.filter(g=>(g.name+" "+g.description+" "+g.category).toLowerCase().includes(term)&&(!cat||g.category===cat));const ordered=sort.value==="recent"?found.filter(g=>recents().includes(g.id)).sort((x,y)=>recents().indexOf(x.id)-recents().indexOf(y.id)):sorted(found);$("#page .game-grid").outerHTML=grid(ordered).replace("game-grid","game-grid "+(settings().libraryLayout==="cards"?"cards-layout":"grid-layout"))};q.addEventListener("input",filter);category.addEventListener("change",filter);sort.addEventListener("change",filter)}}
 const APP_PAGE_TITLES={home:"Home",search:"Web search",games:"Game library","my-library":"My library",favourites:"Favourites",recent:"Recently played",ai:"AI assistant",changelog:"Changelog","bug-report":"Feedback",settings:"Settings","avatar-market":"Marketplace"};
-function showView(v,fromTab=false){
- currentView=v;activeWikiTab=null;activeWebTab=null;
- if(!fromTab){let tab=appTabs.find(t=>t.view===v);if(!tab){const id=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);tab={id,view:v,title:APP_PAGE_TITLES[v]||v};appTabs.push(tab)}activeAppTab=tab.id;}
- shell.hidden=true;page.hidden=false;pageRender();renderWikiTabs();
+function stashActiveAppTab(){
+ if(!activeAppTab||page.hidden||["wiki-reader","proxy-reader","game-player"].includes(currentView))return;
+ const tab=appTabs.find(t=>t.id===activeAppTab);if(!tab)return;
+ tab.fragment=tab.fragment||document.createDocumentFragment();tab.scrollTop=page.scrollTop;
+ while(page.firstChild)tab.fragment.append(page.firstChild);
+ tab.ready=true;
 }
-function activateAppTab(id){const tab=appTabs.find(t=>t.id===id);if(!tab)return;activeAppTab=id;activeWikiTab=null;activeWebTab=null;showView(tab.view,true);}
+function showView(v){
+ let tab=appTabs.find(t=>t.view===v);
+ if(!tab){const id=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);tab={id,view:v,title:APP_PAGE_TITLES[v]||v,fragment:document.createDocumentFragment(),ready:false};appTabs.push(tab)}
+ if(activeAppTab!==tab.id)stashActiveAppTab();
+ currentView=v;activeWikiTab=null;activeWebTab=null;activeAppTab=tab.id;shell.hidden=true;page.hidden=false;
+ if(tab.ready&&tab.fragment?.childNodes.length){page.innerHTML="";page.append(tab.fragment);page.scrollTop=tab.scrollTop||0;$("#view-name").textContent=tab.title;document.querySelectorAll(".nav-link[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===currentView));applySettings();}
+ else pageRender();
+ renderWikiTabs();
+}
+function activateAppTab(id){const tab=appTabs.find(t=>t.id===id);if(!tab)return;showView(tab.view);}
 function closeAppTab(id){
  const index=appTabs.findIndex(t=>t.id===id);if(index<0)return;
  const wasActive=activeAppTab===id;appTabs.splice(index,1);
- if(wasActive){const next=appTabs[Math.min(index,appTabs.length-1)]||appTabs[appTabs.length-1];if(next){activateAppTab(next.id);return}if(webTabs.length){activeWebTab=webTabs[webTabs.length-1].id;activeAppTab=null;showProxyTab();return}if(wikiTabs.length){activeWikiTab=wikiTabs[wikiTabs.length-1].id;activeAppTab=null;showWikiTab();return}showView("home");return}
+ if(wasActive){activeAppTab=null;const next=appTabs[Math.min(index,appTabs.length-1)]||appTabs[appTabs.length-1];if(next){activateAppTab(next.id);return}if(webTabs.length){activeWebTab=webTabs[webTabs.length-1].id;activeAppTab=null;showProxyTab();return}if(wikiTabs.length){activeWikiTab=wikiTabs[wikiTabs.length-1].id;activeAppTab=null;showWikiTab();return}showView("home");return}
  renderWikiTabs();
 }
 function renderTabs(){runningTabs.innerHTML=sessions.map(s=>'<button class="nav-link running-game-tab '+(s.id===activeSessionId?'active':'')+'" data-session="'+esc(s.id)+'"><span>▶</span><span class="running-game-name">'+esc(s.game.name)+'</span><span class="running-game-close" data-close-session="'+esc(s.id)+'">×</span></button>').join("");}
