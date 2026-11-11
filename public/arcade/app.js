@@ -73,7 +73,21 @@ function showWikiTab(){
 async function runWikiSearch(query,statusSelector="#wiki-search-status",resultsSelector="#wiki-search-results"){
  const q=String(query||"").trim().slice(0,160),status=$(statusSelector),results=$(resultsSelector);if(!q||!status||!results)return;
  const engine=settings().searchEngine==="wikipedia"?"wikipedia":"google";
- if(engine==="google"){status.textContent="Opening Google inside a Solaris tab…";results.innerHTML="";openProxyPage("https://www.google.com/search?q="+encodeURIComponent(q),"Google");return}
+ if(engine==="google"){
+  status.textContent="Searching Google…";results.innerHTML="";
+  try{
+   const response=await fetch("/api/search/google?q="+encodeURIComponent(q),{headers:{"Accept":"application/json"}});
+   const data=await response.json().catch(()=>({}));
+   if(!response.ok)throw Error(data.error||"Search is temporarily unavailable.");
+   const items=Array.isArray(data.results)?data.results:[];
+   if(!items.length){status.textContent="No results found. Try a different search.";return}
+   status.textContent=items.length+" results · "+(data.provider||"Search");
+   if(data.fallback){const note=document.createElement("p");note.className="wiki-reader-error";note.textContent="Google's results could not be read, so these results are from "+(data.provider||"the backup search")+".";results.append(note)}
+   results.insertAdjacentHTML("beforeend",items.map((item,index)=>'<button type="button" class="wiki-result" data-search-result="'+index+'"><span class="wiki-result-icon">↗</span><span><strong>'+esc(item.title||item.domain||"Search result")+'</strong><small>'+esc(item.domain||item.url||"")+'</small><span class="wiki-excerpt">'+esc(item.snippet||"Open this result.")+'</span></span><span class="wiki-result-arrow">↗</span></button>').join(""));
+   results.querySelectorAll("[data-search-result]").forEach(button=>button.addEventListener("click",()=>{const item=items[Number(button.dataset.searchResult)];if(item?.url)openProxyPage(item.url,item.title||item.domain||"Website")}));
+  }catch(error){status.textContent=error.message||"Search failed."}
+  return;
+ }
  status.textContent="Searching Wikipedia…";results.innerHTML="";
  try{
   const response=await fetch("/api/search/wikipedia?q="+encodeURIComponent(q),{headers:{"Accept":"application/json"}});
