@@ -784,3 +784,36 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 .button{border-radius:12px}
 .empty{border-color:var(--line);background:color-mix(in srgb,var(--panel) 70%,transparent)}
 @media(max-width:760px){.page{width:calc(100% - 32px);padding-top:28px}.topbar{padding:0 16px}.status-label{display:none}}
+
+/* Solaris internal Wikipedia browser tabs */
+.wiki-tabbar{display:flex;align-items:center;gap:8px;min-height:48px;padding:6px 22px;border-bottom:1px solid var(--line);background:var(--panel);overflow:hidden}
+.wiki-tabs{display:flex;align-items:center;gap:5px;min-width:0;overflow-x:auto;scrollbar-width:thin;flex:1}
+.wiki-tab{display:flex;align-items:center;max-width:230px;min-width:90px;border:1px solid transparent;border-radius:10px 10px 6px 6px;background:var(--panel2)}
+.wiki-tab.active{background:var(--bg);border-color:var(--line);border-bottom-color:var(--accent)}
+.wiki-tab-select{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:0;background:none;color:var(--text);padding:9px 5px 9px 12px;font-size:11px;cursor:pointer;flex:1;text-align:left}
+.wiki-tab-close{border:0;background:none;color:var(--muted);padding:6px 9px;cursor:pointer;border-radius:7px}
+.wiki-tab-close:hover{background:var(--panel2);color:var(--text)}
+.wiki-new-tab{flex:none;border:1px solid var(--line);border-radius:9px;background:transparent;color:var(--muted);padding:8px 11px;font-size:11px;cursor:pointer}
+.wiki-new-tab:hover{color:var(--text);border-color:var(--accent)}
+.wiki-result{width:100%;text-align:left;cursor:pointer;font:inherit}
+.wiki-reader{max-width:960px;margin:0 auto}
+.wiki-reader-toolbar{display:flex;align-items:center;gap:14px;margin:0 0 22px;color:var(--muted);font-size:10px;letter-spacing:.08em}
+.wiki-reader-toolbar span{flex:1}
+.wiki-reader-toolbar a{color:var(--accent);text-decoration:none}
+.wiki-article{padding:clamp(20px,4vw,44px);border:1px solid var(--line);border-radius:20px;background:var(--panel);color:var(--text);font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+.wiki-article h1,.wiki-article h2,.wiki-article h3{line-height:1.25;letter-spacing:-.5px;margin:1.5em 0 .55em}
+.wiki-article h1{font-size:30px;margin-top:0}
+.wiki-article h2{font-size:22px;border-bottom:1px solid var(--line);padding-bottom:9px}
+.wiki-article h3{font-size:17px}
+.wiki-article p{margin:0 0 1.1em}
+.wiki-article a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.wiki-article img{max-width:min(100%,440px);height:auto;border-radius:10px}
+.wiki-article figure{margin:20px 0;padding:12px;background:var(--panel2);border-radius:12px}
+.wiki-article figcaption{font-size:11px;color:var(--muted)}
+.wiki-article table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;font-size:12px}
+.wiki-article th,.wiki-article td{border:1px solid var(--line);padding:7px 10px}
+.wiki-article blockquote{margin:18px 0;padding:5px 18px;border-left:3px solid var(--accent);color:var(--muted)}
+.wiki-article li{margin:4px 0}
+.wiki-article pre{max-width:100%;overflow:auto;padding:12px;border-radius:10px;background:var(--panel2)}
+.wiki-reader-error{color:#e07070}
+@media(max-width:700px){.wiki-tabbar{padding:6px 12px}.wiki-tab{max-width:165px}.wiki-reader-toolbar{flex-wrap:wrap}.wiki-article{padding:18px;font-size:13px}.wiki-article h1{font-size:24px}}
