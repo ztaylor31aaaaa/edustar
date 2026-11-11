@@ -1,32 +1,3 @@
-
-function base64urlEncode(bytes) {
-  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-}
-function base64urlDecode(value) {
-  return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - value.length % 4) % 4)), c => c.charCodeAt(0));
-}
-async function signGuardState(state, secret) {
-  const body = base64urlEncode(new TextEncoder().encode(JSON.stringify(state)));
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const signature = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(body)));
-  return body + "." + base64urlEncode(signature);
-}
-async function readGuardState(request, secret) {
-  const raw = (request.headers.get("Cookie") || "").split(";").map(x => x.trim()).find(x => x.startsWith("ame_guard="))?.slice(10) || "";
-  if (!raw) return {};
-  const parts = raw.split(".");
-  if (parts.length !== 2) return {};
-  try {
-    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
-    if (!await crypto.subtle.verify("HMAC", key, base64urlDecode(parts[1]), new TextEncoder().encode(parts[0]))) return {};
-    const state = JSON.parse(new TextDecoder().decode(base64urlDecode(parts[0])));
-    return state && typeof state === "object" ? state : {};
-  } catch { return {}; }
-}
-function guardCookie(value, maxAge = 86400) {
-  return "ame_guard=" + value + "; Path=/; Max-Age=" + maxAge + "; HttpOnly; Secure; SameSite=Strict";
-}
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -84,39 +55,6 @@ export default {
       } catch { return Response.json({ error: "Could not contact the email provider. Try again later." }, { status: 502 }); }
     }
 
-
-
-    if (url.pathname === "/api/access/verify") {
-      if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
-      const origin = request.headers.get("Origin");
-      if (origin && origin !== url.origin) return Response.json({ error: "Cross-origin requests are not allowed." }, { status: 403 });
-      if (request.headers.get("Sec-Fetch-Site") === "cross-site") return Response.json({ error: "Cross-site requests are not allowed." }, { status: 403 });
-      const guardSecret = env.ACCESS_GUARD_SECRET || env.DEV_CODE_SECRET;
-      if (!guardSecret) return Response.json({ error: "Access protection is not configured. Add ACCESS_GUARD_SECRET to the Worker secrets (or configure DEV_CODE_SECRET)." }, { status: 503 });
-      let data;
-      try { data = await request.json(); } catch { return Response.json({ error: "Invalid request." }, { status: 400 }); }
-      const type = data?.type === "solaris" ? "solaris" : data?.type === "game" ? "game" : "";
-      if (!type || typeof data.code !== "string" || data.code.length > 300) return Response.json({ error: "Invalid access request." }, { status: 400 });
-      const configuredCode = type === "game" ? (env.GAME_ACCESS_CODE || "stupidlyakward") : env.SOLARIS_ACCESS_CODE;
-      if (!configuredCode) return Response.json({ error: type === "game" ? "The class access code is not configured on the Worker." : "The Solaris access code is not configured on the Worker." }, { status: 503 });
-      const state = await readGuardState(request, guardSecret);
-      const now = Date.now();
-      const entry = state[type] && typeof state[type] === "object" ? state[type] : { count: 0, until: 0 };
-      if (Number(entry.until) > now) return Response.json({ error: "Too many incorrect attempts. This browser is locked out for 24 hours.", locked: true }, { status: 429, headers: { "Cache-Control": "no-store" } });
-      if (String(data.code).trim() !== String(configuredCode).trim()) {
-        const count = Math.min(3, Math.max(0, Number(entry.count) || 0) + 1);
-        state[type] = { count, until: count >= 3 ? now + 86400000 : 0 };
-        const signed = await signGuardState(state, guardSecret);
-        const locked = count >= 3;
-        return Response.json({ error: locked ? "Three incorrect attempts. This browser is locked out for 24 hours." : "That code wasn't recognised. Try again.", locked, attemptsRemaining: Math.max(0, 3 - count) }, {
-          status: locked ? 429 : 401,
-          headers: { "Cache-Control": "no-store", "Set-Cookie": guardCookie(signed) }
-        });
-      }
-      delete state[type];
-      const headers = { "Cache-Control": "no-store", "Set-Cookie": Object.keys(state).length ? guardCookie(await signGuardState(state, env.ACCESS_GUARD_SECRET)) : guardCookie("", 0) };
-      return Response.json({ ok: true }, { headers });
-    }
 
     if (url.pathname === "/api/dev-code") {
       if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
