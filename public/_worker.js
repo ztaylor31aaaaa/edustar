@@ -63,7 +63,7 @@ export default {
           })
         });
         const result = await sent.text().catch(() => "");
-        if (!sent.ok) return Response.json({ error: "EmailJS rejected the feedback (" + sent.status + "). Check the EmailJS template, connected email service and account limits." }, { status: 502 });
+        if (!sent.ok) return Response.json({ error: "EmailJS error (" + sent.status + "): " + (result.replace(/[\\r\\n]+/g, " ").slice(0, 300) || "No error details returned.") }, { status: 502, headers: { "Cache-Control": "no-store" } });
         return Response.json({ ok: true, id: result.slice(0, 100) || null }, { headers: { "Cache-Control": "no-store" } });
       } catch { return Response.json({ error: "Could not contact EmailJS. Try again later." }, { status: 502 }); }
     }
