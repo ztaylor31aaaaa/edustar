@@ -207,6 +207,15 @@ export default {
         let readable = source
           .replace(/<!--[\s\S]*?-->/g, " ")
           .replace(/<(script|style|noscript|svg|canvas|iframe|form|nav|footer|header|aside)[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
+          .replace(/<a\b([^>]*)>([\s\S]*?)<\/a\s*>/gi, (whole, attrs, label) => {
+            const href = attrs.match(/\bhref\s*=\s*(["'])(.*?)\1/i)?.[2];
+            if (!href) return label;
+            try {
+              const destination = new URL(decode(href), target);
+              if (destination.protocol !== "https:" && destination.protocol !== "http:") return label;
+              return label + " (" + destination.href + ")";
+            } catch { return label; }
+          })
           .replace(/<(br|\/p|\/div|\/article|\/section|\/h[1-6]|li|\/li|\/tr|\/blockquote)[^>]*>/gi, "\n")
           .replace(/<[^>]+>/g, " ");
         readable = decode(readable).replace(/\r/g, "").replace(/[ \t]+/g, " ").replace(/ *\n */g, "\n").replace(/\n{3,}/g, "\n\n").trim();
