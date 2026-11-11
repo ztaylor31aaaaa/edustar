@@ -37,39 +37,38 @@ export default {
       const images = Array.isArray(report.images) ? report.images : [];
       if (images.length > 3) return Response.json({ error: "Attach no more than 3 images." }, { status: 400 });
       const allowedTypes = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
-      const imageParams = { feedback_image_1: "", feedback_image_2: "", feedback_image_3: "" };
-      const imageNames = [];
+      const form = new FormData();
+      form.append("name", "Solaris feedback");
+      form.append("_subject", "New Solaris Feedback — " + category);
+      form.append("_cc", "occularpixel.zac@gmail.com");
+      form.append("_template", "table");
+      form.append("_honey", "");
+      form.append("category", category);
+      form.append("title", title);
+      form.append("page", page);
+      form.append("message", details);
       for (let i = 0; i < images.length; i++) {
         const image = images[i];
         if (!image || typeof image.data !== "string" || !allowedTypes[image.type] || image.data.length > 2_850_000 || !/^[A-Za-z0-9+/]*={0,2}$/.test(image.data)) return Response.json({ error: "One of the attached images is invalid or too large." }, { status: 400 });
-        imageParams["feedback_image_" + (i + 1)] = "data:" + image.type + ";base64," + image.data;
-        imageNames.push(clean(image.name, 100) || ("feedback-image." + allowedTypes[image.type]));
+        const binary = Uint8Array.from(atob(image.data), char => char.charCodeAt(0));
+        const filename = clean(image.name, 100).replace(/[\\\\/\\\\\\\\]/g, "_") || ("feedback-image-" + (i + 1) + "." + allowedTypes[image.type]);
+        form.append("attachment_" + (i + 1), new Blob([binary], { type: image.type }), filename);
       }
-      const message = "Category: " + category + "\nTitle: " + title + "\nPage: " + page + "\n\n" + details + (imageNames.length ? "\n\nScreenshot files: " + imageNames.join(", ") : "");
-      if (!env.EMAILJS_PRIVATE_KEY) return Response.json({ error: "Email delivery is not configured: add the EMAILJS_PRIVATE_KEY secret to the Cloudflare Worker." }, { status: 503 });
       try {
-        const sent = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+        const sent = await fetch("https://formsubmit.co/ztaylor31@salesian.vic.edu.au", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            service_id: "service_839w07f",
-            template_id: "template_0xp8ivf",
-            user_id: "zBLAKZcYgjIffcYbM",
-            accessToken: env.EMAILJS_PRIVATE_KEY,
-            template_params: {
-              name: "Solaris feedback",
-              time: new Date().toLocaleString("en-AU", { timeZone: "Australia/Melbourne" }),
-              message,
-              ...imageParams
-            }
-          })
+          body: form,
+          redirect: "manual"
         });
-        const result = await sent.text().catch(() => "");
-        if (!sent.ok) return Response.json({ error: "EmailJS error (" + sent.status + "): " + (result.replace(/[\\r\\n]+/g, " ").slice(0, 300) || "No error details returned.") }, { status: 502, headers: { "Cache-Control": "no-store" } });
-        return Response.json({ ok: true, id: result.slice(0, 100) || null }, { headers: { "Cache-Control": "no-store" } });
-      } catch { return Response.json({ error: "Could not contact EmailJS. Try again later." }, { status: 502 }); }
+        if (!sent.ok && !(sent.status >= 300 && sent.status < 400)) {
+          const result = await sent.text().catch(() => "");
+          return Response.json({ error: "Feedback service error (" + sent.status + "): " + result.replace(/[\\r\\n]+/g, " ").slice(0, 250) }, { status: 502 });
+        }
+        return Response.json({ ok: true, message: "Feedback submitted. If this is your first submission, check the recipient inbox for FormSubmit's confirmation email." }, { headers: { "Cache-Control": "no-store" } });
+      } catch {
+        return Response.json({ error: "Could not contact the feedback service. Try again later." }, { status: 502 });
+      }
     }
-
 
     if (url.pathname === "/api/dev-code") {
       if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
