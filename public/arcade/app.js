@@ -97,21 +97,38 @@ async function runWikiSearch(query,statusSelector="#wiki-search-status",resultsS
   results.innerHTML=pages.map(item=>'<button type="button" class="wiki-result" data-wiki-open="'+esc(item.key||item.title.replace(/ /g,"_"))+'" data-wiki-title="'+esc(item.title)+'">'+(item.thumbnail?'<img src="'+esc(item.thumbnail)+'" alt="" loading="lazy">':'<span class="wiki-result-icon">W</span>')+'<span><strong>'+esc(item.title)+'</strong><small>'+esc(item.description||"Wikipedia article")+'</small><span class="wiki-excerpt">'+esc(item.excerpt||"Open the article to read more.")+'</span></span><span class="wiki-result-arrow">↗</span></button>').join("");
  }catch(error){status.textContent=error.message||"Search failed."}
 }
+const SOLARIS_OWNED_HOST=location.hostname;
+async function loadOwnedSiteFrame(tab,parsed){
+ const route="/owned-site"+(parsed.pathname||"/")+parsed.search+parsed.hash;
+ try{
+  const response=await fetch(route,{headers:{"Accept":"text/html"}});
+  if(!response.ok)throw Error("The owned-site route returned HTTP "+response.status+".");
+  let html=await response.text();
+  if(!html.toLowerCase().includes("<html"))throw Error("That path did not return an HTML page.");
+  const bridge='<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("a[href]");if(!a)return;var u;try{u=new URL(a.href)}catch(_){return}if(u.origin!==location.origin||!u.pathname.startsWith("/owned-site/"))return;e.preventDefault();parent.postMessage({type:"solaris-owned-nav",url:u.href},"*")},true)})();<\\/script>';
+  html=html.replace("</body>",bridge+"</body>");
+  tab.frame.srcdoc=html;
+ }catch(error){
+  tab.frame.srcdoc='<meta charset="utf-8"><style>body{font:15px Arial;padding:28px;background:#171923;color:#fff}p{color:#b8bdcc}</style><h2>Could not load this page</h2><p>'+String(error.message||error).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))+'</p>';
+ }
+}
 async function openProxyPage(url,title){
  let parsed;try{parsed=new URL(url)}catch{toast("Enter a valid website address.");return}
- if(!["https:","http:"].includes(parsed.protocol)||parsed.username||parsed.password){toast("Enter a normal HTTP or HTTPS website address.");return}
+ if(!["https:","http:"].includes(parsed.protocol)||parsed.username||parsed.password){toast("Enter a normal HTTP or HTTPS address.");return}
  stashActiveAppTab();activeAppTab=null;
  const idExisting=webTabs.find(t=>t.url===parsed.href);
  if(idExisting){activeWebTab=idExisting.id;activeWikiTab=null;showProxyTab();return}
  const id=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
- const frame=document.createElement("iframe");frame.className="proxy-browser-frame";frame.title=String(title||parsed.hostname);frame.referrerPolicy="strict-origin-when-cross-origin";frame.allow="clipboard-read; clipboard-write; fullscreen; autoplay";frame.allowFullscreen=true;frame.src=parsed.href;
+ const frame=document.createElement("iframe");frame.className="proxy-browser-frame";frame.title=String(title||parsed.hostname);frame.referrerPolicy="strict-origin-when-cross-origin";frame.allow="clipboard-read; clipboard-write; fullscreen; autoplay";frame.allowFullscreen=true;
  const tab={id,url:parsed.href,title:String(title||parsed.hostname).slice(0,100),history:[parsed.href],historyIndex:0,frame};webTabs.push(tab);activeWebTab=id;activeWikiTab=null;renderWikiTabs();showProxyTab();
+ if(parsed.hostname===SOLARIS_OWNED_HOST)await loadOwnedSiteFrame(tab,parsed);else frame.src=parsed.href;
 }
-function loadProxyLocation(tab,url,title,record=true){
+async function loadProxyLocation(tab,url,title,record=true){
  let parsed;try{parsed=new URL(url)}catch{toast("That address is invalid.");return}
  if(!["https:","http:"].includes(parsed.protocol)||parsed.username||parsed.password){toast("Only normal website addresses can be opened.");return}
  if(record){tab.history=tab.history.slice(0,tab.historyIndex+1);tab.history.push(parsed.href);tab.historyIndex=tab.history.length-1}
- tab.url=parsed.href;tab.title=String(title||parsed.hostname).slice(0,100);if(tab.frame)tab.frame.src=parsed.href;
+ tab.url=parsed.href;tab.title=String(title||parsed.hostname).slice(0,100);
+ if(tab.frame){if(parsed.hostname===SOLARIS_OWNED_HOST)await loadOwnedSiteFrame(tab,parsed);else tab.frame.src=parsed.href}
  if(activeWebTab===tab.id)showProxyTab();
 }
 function showProxyTab(){
@@ -264,6 +281,15 @@ function startActivity(kind){
  function draw(){body.innerHTML='<p class="kicker">'+game.tag+' · QUESTION '+round+'/5</p><h2 id="modal-title">'+game.title+'</h2><div class="activity-progress"><span style="width:'+((round-1)*20)+'%"></span></div><p class="activity-question">'+esc(current.q)+'</p><form id="activity-answer-form"><input class="field" id="activity-answer" autocomplete="off" placeholder="Your answer" required><button class="button primary" type="submit">Check answer</button></form><p id="activity-feedback" class="activity-feedback">Score: '+score+'</p>';footer.innerHTML='<button class="button secondary" id="activity-exit">Close</button>';$("#activity-exit").onclick=closeModal;$("#activity-answer-form").onsubmit=e=>{e.preventDefault();const input=$("#activity-answer"),answer=input.value.trim().toLowerCase(),correct=String(current.a).toLowerCase();if(answer===correct){score++;$("#activity-feedback").textContent="Correct! Score: "+score;}else{$("#activity-feedback").textContent="Not quite — answer: "+current.a+". Score: "+score;}if(round===5){$("#activity-answer-form").hidden=true;$("#activity-feedback").textContent="Finished! Final score: "+score+"/5";const again=document.createElement("button");again.className="button primary";again.textContent="Play again";again.onclick=()=>{score=0;round=1;current=game.make();draw()};footer.prepend(again);return;}round++;current=game.make();setTimeout(draw,650);};}
  draw();modal.hidden=false;
 }function savePrefs(showToast=true){const s=settings();s.theme=document.querySelector("[data-theme-choice].active")?.dataset.themeChoice||s.theme;s.scale=$("#s-scale").value;s.navPosition=$("#s-nav-position").value;s.searchEngine=$("#s-search-engine").value;s.libraryLayout=$("#s-library-layout").value;s.clock24=$("#s-clock24").checked;s.clockSeconds=$("#s-clock-seconds").checked;s.accent=$("#s-accent").value;s.animations=$("#s-animations").value;s.compact=$("#s-compact").checked;s.motion=$("#s-motion").checked;s.showDescriptions=$("#s-desc").checked;s.confirm=$("#s-confirm").checked;s.background=$("#s-background").value;s.corners=$("#s-corners").value;s.density=$("#s-density").value;s.hoverEffects=$("#s-hover-effects").checked;s.pageTransitions=$("#s-page-transitions").checked;s.showStatus=$("#s-show-status").checked;put("sunset_settings",s);applySettings();if(showToast)toast("Solaris options saved.");pageRender()}
+window.addEventListener("message",event=>{
+ const tab=webTabs.find(item=>item.frame&&item.frame.contentWindow===event.source);
+ const data=event.data;
+ if(!tab||!data||data.type!=="solaris-owned-nav"||typeof data.url!=="string")return;
+ let target;try{target=new URL(data.url)}catch{return}
+ if(target.origin!==location.origin||!target.pathname.startsWith("/owned-site/"))return;
+ const external=new URL(target.pathname.slice("/owned-site".length)+target.search+target.hash,location.origin);
+ loadProxyLocation(tab,external.href,undefined,true);
+});
 document.addEventListener("click",e=>{
  const wikiLink=e.target.closest("[data-wiki-href]");
  if(wikiLink){e.preventDefault();const href=wikiLink.dataset.wikiHref;const key=decodeURIComponent(href.replace(/^\/wiki\//,""));openWikiPage(key.replace(/_/g," "),key);return}
