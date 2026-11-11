@@ -817,3 +817,35 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 .wiki-article pre{max-width:100%;overflow:auto;padding:12px;border-radius:10px;background:var(--panel2)}
 .wiki-reader-error{color:#e07070}
 @media(max-width:700px){.wiki-tabbar{padding:6px 12px}.wiki-tab{max-width:165px}.wiki-reader-toolbar{flex-wrap:wrap}.wiki-article{padding:18px;font-size:13px}.wiki-article h1{font-size:24px}}
+
+/* Solaris browser workspace and Cherri-inspired tab styling */
+.home-search-submit{width:44px;height:44px;flex:0 0 44px;border:0;border-radius:13px;background:var(--accent);color:#211600;font-size:25px;font-weight:800;display:grid;place-items:center;cursor:pointer;transition:transform .18s,filter .18s}
+.home-search-submit:hover{transform:scale(1.05);filter:brightness(1.08)}
+.wiki-tabbar{gap:10px;min-height:54px;padding:8px 18px;background:linear-gradient(180deg,var(--panel),var(--bg));border-bottom:1px solid var(--line)}
+.wiki-tabs{align-items:stretch;gap:7px;padding:2px 1px}
+.wiki-tab{position:relative;min-width:120px;max-width:250px;min-height:36px;overflow:hidden;border:1px solid var(--line);border-radius:11px 11px 7px 7px;background:var(--panel2);box-shadow:0 2px 8px #00000012;transition:background .18s,border-color .18s,transform .18s}
+.wiki-tab:hover{transform:translateY(-1px);border-color:var(--accent)}
+.wiki-tab.active{background:var(--bg);border-color:color-mix(in srgb,var(--accent) 65%,var(--line));box-shadow:inset 0 2px var(--accent),0 4px 14px #00000018}
+.wiki-tab-select{padding:9px 5px 9px 12px;font-size:11px;font-weight:700;letter-spacing:.01em}
+.wiki-tab-close{font-size:16px;line-height:1;padding:5px 9px}
+.wiki-new-tab{border-radius:11px;background:var(--panel2);font-weight:700}
+.proxy-reader{max-width:1080px;margin:0 auto}
+.proxy-reader-toolbar{display:flex;align-items:center;gap:14px;margin:0 0 18px;color:var(--muted);font-size:11px}
+.proxy-reader-toolbar span{flex:1}
+.proxy-reader-toolbar a{color:var(--accent);text-decoration:none;font-weight:700}
+.proxy-article{white-space:pre-wrap;overflow-wrap:anywhere;padding:clamp(20px,4vw,42px);border:1px solid var(--line);border-radius:18px;background:var(--panel);color:var(--text);font:13px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;min-height:55vh}
+.web-result .wiki-result-icon{font-weight:900;font-size:18px}
+body.nav-top .main:has(#wiki-tabbar:not([hidden])),body.nav-bottom .main:has(#wiki-tabbar:not([hidden])){display:grid;grid-template-columns:210px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);align-items:stretch}
+body.nav-top .main:has(#wiki-tabbar:not([hidden]))>.topbar,body.nav-bottom .main:has(#wiki-tabbar:not([hidden]))>.topbar{grid-column:1/-1;grid-row:1}
+body.nav-top .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar,body.nav-bottom .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar{grid-column:1;grid-row:2;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;width:210px;min-width:0;min-height:0;height:100%;padding:12px 10px;border-right:1px solid var(--line);border-bottom:0;overflow:hidden}
+body.nav-top .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar[hidden],body.nav-bottom .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar[hidden]{display:none}
+body.nav-top .main:has(#wiki-tabbar:not([hidden])) .wiki-tabs,body.nav-bottom .main:has(#wiki-tabbar:not([hidden])) .wiki-tabs{flex-direction:column;align-items:stretch;overflow-y:auto;overflow-x:hidden}
+body.nav-top .main:has(#wiki-tabbar:not([hidden])) .wiki-tab,body.nav-bottom .main:has(#wiki-tabbar:not([hidden])) .wiki-tab{width:100%;max-width:none;min-width:0}
+body.nav-top .main:has(#wiki-tabbar:not([hidden]))>.page,body.nav-bottom .main:has(#wiki-tabbar:not([hidden]))>.page{grid-column:2;grid-row:2;min-width:0;width:100%}
+body.nav-top .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar .wiki-new-tab,body.nav-bottom .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar .wiki-new-tab{width:100%}
+@media(max-width:720px){
+ body.nav-top .main:has(#wiki-tabbar:not([hidden])),body.nav-bottom .main:has(#wiki-tabbar:not([hidden])){grid-template-columns:145px minmax(0,1fr)}
+ body.nav-top .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar,body.nav-bottom .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar{width:145px;padding:8px 6px}
+ .wiki-tab{min-width:0}
+ .wiki-tab-select{font-size:10px;padding-left:8px}
+}
