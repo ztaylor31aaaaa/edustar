@@ -70,6 +70,72 @@ export default {
       }
     }
 
+
+    if (url.pathname === "/api/search/google") {
+      if (request.method !== "GET") return Response.json({ error: "GET required." }, { status: 405 });
+      const query = (url.searchParams.get("q") || "").trim().slice(0, 160);
+      if (!query) return Response.json({ error: "Enter a search term." }, { status: 400 });
+      try {
+        const upstreamUrl = new URL("https://www.google.com/search");
+        upstreamUrl.searchParams.set("q", query);
+        upstreamUrl.searchParams.set("num", "10");
+        upstreamUrl.searchParams.set("gbv", "1");
+        const upstream = await fetch(upstreamUrl, {
+          headers: { "Accept": "text/html", "Accept-Language": "en-AU,en;q=0.9", "User-Agent": "Mozilla/5.0 (compatible; SolarisSearch/1.0)" },
+          cf: { cacheTtl: 120, cacheEverything: true }
+        });
+        if (!upstream.ok) return Response.json({ error: "Google search returned HTTP " + upstream.status + "." }, { status: 502 });
+        const html = await upstream.text();
+        const results = [];
+        const pattern = /<a[^>]+href="(https?:\/\/[^"]+)"[^>]*>[\s\S]{0,1800}?<h3[^>]*>([\s\S]*?)<\/h3>/gi;
+        let match;
+        while ((match = pattern.exec(html)) && results.length < 10) {
+          let target;
+          try { target = new URL(match[1]); } catch { continue; }
+          if (!["http:", "https:"].includes(target.protocol) || target.hostname.endsWith("google.com")) continue;
+          const title = match[2].replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&#x27;/gi, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\s+/g, " ").trim();
+          if (!title || results.some(item => item.url === target.href)) continue;
+          const context = html.slice(match.index, Math.min(html.length, pattern.lastIndex + 1200));
+          const snippet = (context.match(/<div[^>]*>([\s\S]{0,1000}?)<\/div>/i)?.[1] || "").replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&#x27;/gi, "'").replace(/&quot;/g, '"').replace(/\s+/g, " ").trim().slice(0, 320);
+          results.push({ title: title.slice(0, 180), url: target.href, domain: target.hostname, snippet });
+        }
+        if (!results.length) return Response.json({ error: "Google did not return readable results. Try again, or switch to Wikipedia in Settings." }, { status: 502 });
+        return Response.json({ results }, { headers: { "Cache-Control": "public, max-age=120" } });
+      } catch {
+        return Response.json({ error: "Could not contact Google. Try again shortly." }, { status: 502 });
+      }
+    }
+
+    if (url.pathname === "/api/proxy/read") {
+      if (request.method !== "GET") return new Response("GET required.", { status: 405 });
+      const raw = url.searchParams.get("url") || "";
+      let target;
+      try { target = new URL(raw); } catch { return new Response("Invalid website address.", { status: 400 }); }
+      const host = target.hostname.toLowerCase();
+      const blockedHost = !host || host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") ||
+        host === "metadata.google.internal" || host === "169.254.169.254" ||
+        /^(127\.|10\.|192\.168\.|0\.|169\.254\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(host) ||
+        host.includes(":") || /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
+      if (target.protocol !== "https:" || target.username || target.password || target.port && target.port !== "443" || blockedHost) {
+        return new Response("Only public HTTPS websites on the standard port can be opened.", { status: 400 });
+      }
+      try {
+        const readerUrl = "https://r.jina.ai/http://" + target.hostname + target.pathname + target.search;
+        const upstream = await fetch(readerUrl, {
+          headers: { "Accept": "text/plain", "User-Agent": "SolarisBrowser/1.0" },
+          cf: { cacheTtl: 300, cacheEverything: true }
+        });
+        if (!upstream.ok) return new Response("Reader service returned HTTP " + upstream.status + ".", { status: 502 });
+        const body = await upstream.text();
+        if (!body || body.length > 500000) return new Response("The page was empty or too large for reader mode.", { status: 502 });
+        return new Response(body.slice(0, 120000), {
+          headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=300", "X-Content-Type-Options": "nosniff" }
+        });
+      } catch {
+        return new Response("The proxy reader could not retrieve this website.", { status: 502 });
+      }
+    }
+
     if (url.pathname === "/api/bug-report") {
       if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
       const origin = request.headers.get("Origin");
