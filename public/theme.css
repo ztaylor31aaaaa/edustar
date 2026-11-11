@@ -79,3 +79,28 @@ body.dark .site-theme-switch{box-shadow:0 3px 12px #0004}
 
 body.player-page .site-theme-dock{left:16px;right:auto;top:14px}
 body.player-page .site-theme-switch{opacity:.98}
+
+/* Experience selection cards: keep them in sync with the active site theme. */
+body.dark .signin-choice{
+  background:#1d1a14!important;
+  color:#f7f1e6!important;
+  border-color:#403625!important;
+  box-shadow:0 8px 24px #0003;
+}
+body.dark .signin-choice strong{color:#fff8e9!important}
+body.dark .signin-choice span{color:#b6a98f!important}
+body.dark .signin-choice:hover{
+  background:#282319!important;
+  border-color:#c49a23!important;
+}
+body.light .signin-choice{
+  background:#fffdfa!important;
+  color:#29232a!important;
+  border-color:#e2d8ce!important;
+}
+body.light .signin-choice strong{color:#29232a!important}
+body.light .signin-choice span{color:#776b73!important}
+body.light .signin-choice:hover{
+  background:#fff8e9!important;
+  border-color:#d5a900!important;
+}
