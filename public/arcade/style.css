@@ -893,3 +893,23 @@ body.nav-top .main:has(#wiki-tabbar:not([hidden]))>.wiki-tabbar .wiki-new-tab,bo
  .browser-control{width:31px;height:31px;flex-basis:31px}
  .browser-address-form{flex:1 1 100%;min-width:0}
 }
+
+
+/* Browser view: use the entire horizontal space available beside Solaris menus */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+.layout:has(.proxy-reader){width:100%;max-width:100%;grid-template-columns:246px minmax(0,1fr);column-gap:0}
+.main:has(.proxy-reader){width:100%;max-width:none;min-width:0;margin:0;padding:0;overflow-x:hidden}
+.main:has(.proxy-reader)>.topbar{width:100%;max-width:none;box-sizing:border-box;padding-left:18px;padding-right:18px}
+.main:has(.proxy-reader)>.wiki-tabbar:not([hidden]){width:100%;max-width:none;box-sizing:border-box}
+.main:has(.proxy-reader)>.page{display:block;box-sizing:border-box;width:100%;max-width:none;min-width:0;margin:0;padding:0;overflow-x:hidden}
+.main:has(.proxy-reader) .proxy-reader{box-sizing:border-box;width:100%;max-width:none;min-width:0;margin:0;padding:0}
+.main:has(.proxy-reader) .proxy-browser-toolbar{box-sizing:border-box;width:100%;max-width:none;margin:0}
+.main:has(.proxy-reader) .proxy-browser-stage{box-sizing:border-box;width:100%;max-width:none;min-width:0;margin:0}
+.main:has(.proxy-reader) .proxy-browser-frame{box-sizing:border-box;width:100%;max-width:none;min-width:0}
+@media(max-width:800px){
+ .layout:has(.proxy-reader){grid-template-columns: minmax(0,1fr)}
+ .layout:has(.proxy-reader)>.sidebar{width:100%;max-width:100%}
+ .main:has(.proxy-reader)>.topbar{padding-left:10px;padding-right:10px}
+}
+body.nav-top .layout:has(.proxy-reader),body.nav-bottom .layout:has(.proxy-reader){display:flex;flex-direction:column;width:100%;max-width:100%}
+body.nav-top .main:has(.proxy-reader),body.nav-bottom .main:has(.proxy-reader){width:100%;max-width:none;min-width:0}
