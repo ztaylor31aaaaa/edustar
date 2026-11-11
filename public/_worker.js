@@ -160,8 +160,8 @@ export default {
         const host = parsed.hostname.toLowerCase();
         const blockedHost = !host || host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") ||
           host === "metadata.google.internal" || host === "169.254.169.254" ||
-          /^(127\\.|10\\.|192\\.168\\.|0\\.|169\\.254\\.|172\\.(1[6-9]|2[0-9]|3[01])\\.)/.test(host) ||
-          host.includes(":") || /^\\d{1,3}(\\.\\d{1,3}){3}$/.test(host);
+          /^(127\.|10\.|192\.168\.|0\.|169\.254\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(host) ||
+          host.includes(":") || /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
         return parsed.protocol === "https:" && !parsed.username && !parsed.password &&
           (!parsed.port || parsed.port === "443") && !blockedHost;
       };
@@ -187,12 +187,12 @@ export default {
         }
         if (!upstream.ok) return new Response("The website returned HTTP " + upstream.status + ". Some websites block proxy readers.", { status: 502 });
         const contentType = upstream.headers.get("Content-Type") || "";
-        if (!/text\\/(html|plain)|application\\/(xhtml\\+xml|xml)/i.test(contentType)) {
+        if (!/text\/(html|plain)|application\/(xhtml\+xml|xml)/i.test(contentType)) {
           return new Response("This page is not an HTML or text page that reader mode can display.", { status: 415 });
         }
         const source = await upstream.text();
         if (!source || source.length > 2_000_000) return new Response("The page was empty or too large for reader mode.", { status: 502 });
-        if (/text\\/plain/i.test(contentType)) {
+        if (/text\/plain/i.test(contentType)) {
           return new Response(source.slice(0, 120000), {
             headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=180", "X-Content-Type-Options": "nosniff" }
           });
@@ -201,17 +201,17 @@ export default {
           .replace(/&nbsp;|&#160;/gi, " ")
           .replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">")
           .replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'")
-          .replace(/&#(\\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
-          .replace(/&#x([\\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
-        const title = decode((source.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i) || [,""])[1].replace(/<[^>]*>/g, " ").replace(/\\s+/g, " ").trim());
+          .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+          .replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
+        const title = decode((source.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [,""])[1].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim());
         let readable = source
-          .replace(/<!--[\\s\\S]*?-->/g, " ")
-          .replace(/<(script|style|noscript|svg|canvas|iframe|form|nav|footer|header|aside)[^>]*>[\\s\\S]*?<\\/\\1\\s*>/gi, " ")
-          .replace(/<(br|\\/p|\\/div|\\/article|\\/section|\\/h[1-6]|li|\\/li|\\/tr|\\/blockquote)[^>]*>/gi, "\\n")
+          .replace(/<!--[\s\S]*?-->/g, " ")
+          .replace(/<(script|style|noscript|svg|canvas|iframe|form|nav|footer|header|aside)[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
+          .replace(/<(br|\/p|\/div|\/article|\/section|\/h[1-6]|li|\/li|\/tr|\/blockquote)[^>]*>/gi, "\n")
           .replace(/<[^>]+>/g, " ");
-        readable = decode(readable).replace(/\\r/g, "").replace(/[ \\t]+/g, " ").replace(/ *\\n */g, "\\n").replace(/\\n{3,}/g, "\\n\\n").trim();
+        readable = decode(readable).replace(/\r/g, "").replace(/[ \t]+/g, " ").replace(/ *\n */g, "\n").replace(/\n{3,}/g, "\n\n").trim();
         if (!readable) return new Response("Solaris could not find readable text on this page.", { status: 502 });
-        const output = (title ? title + "\\n\\n" : "") + readable;
+        const output = (title ? title + "\n\n" : "") + readable;
         return new Response(output.slice(0, 120000), {
           headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=180", "X-Content-Type-Options": "nosniff" }
         });
