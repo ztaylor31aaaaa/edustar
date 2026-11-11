@@ -913,3 +913,56 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 }
 body.nav-top .layout:has(.proxy-reader),body.nav-bottom .layout:has(.proxy-reader){display:flex;flex-direction:column;width:100%;max-width:100%}
 body.nav-top .main:has(.proxy-reader),body.nav-bottom .main:has(.proxy-reader){width:100%;max-width:none;min-width:0}
+
+
+/* Hard override for the in-app browser: the site viewport must be wide, not square. */
+@media (min-width:721px){
+  body:not(.nav-top):not(.nav-bottom) .layout:has(.proxy-reader){
+    display:grid!important;
+    grid-template-columns:76px minmax(0,1fr)!important;
+    width:100vw!important;
+    max-width:100vw!important;
+    column-gap:0!important;
+  }
+  body:not(.nav-top):not(.nav-bottom) .layout:has(.proxy-reader)>.main{
+    grid-column:2!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  body:not(.nav-top):not(.nav-bottom) .layout:has(.proxy-reader)>.sidebar{
+    grid-column:1!important;
+    width:76px!important;
+    min-width:76px!important;
+  }
+}
+.main:has(.proxy-reader)>.page,
+.main:has(.proxy-reader) .proxy-reader,
+.main:has(.proxy-reader) .proxy-browser-stage,
+.main:has(.proxy-reader) .proxy-browser-frame{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+.main:has(.proxy-reader) .proxy-browser-stage{
+  display:block!important;
+  flex:1 1 0!important;
+  height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.main:has(.proxy-reader) .proxy-browser-frame{
+  display:block!important;
+  height:100%!important;
+  min-height:0!important;
+  border:0!important;
+}
+@media(max-width:720px){
+  .layout:has(.proxy-reader){display:block!important;width:100%!important;max-width:100%!important}
+  .main:has(.proxy-reader){width:100%!important;max-width:100%!important}
+  .main:has(.proxy-reader) .proxy-browser-stage,
+  .main:has(.proxy-reader) .proxy-browser-frame{width:100%!important}
+}
