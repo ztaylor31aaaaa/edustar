@@ -21,6 +21,33 @@ export default {
     }
 
 
+    if (url.pathname === "/api/search/wikipedia") {
+      if (request.method !== "GET") return Response.json({ error: "GET required." }, { status: 405 });
+      const query = (url.searchParams.get("q") || "").trim().slice(0, 160);
+      if (!query) return Response.json({ error: "Enter a search term." }, { status: 400 });
+      try {
+        const upstreamUrl = new URL("https://en.wikipedia.org/w/rest.php/v1/search/page");
+        upstreamUrl.searchParams.set("q", query);
+        upstreamUrl.searchParams.set("limit", "8");
+        const upstream = await fetch(upstreamUrl, {
+          headers: { "Accept": "application/json", "User-Agent": "SolarisEducation/1.0 (Wikipedia search)" },
+          cf: { cacheTtl: 300, cacheEverything: true }
+        });
+        if (!upstream.ok) return Response.json({ error: "Wikipedia search returned " + upstream.status + "." }, { status: 502 });
+        const data = await upstream.json();
+        const pages = (Array.isArray(data.pages) ? data.pages : []).slice(0, 8).map(item => ({
+          title: String(item.title || "").slice(0, 180),
+          key: String(item.key || "").slice(0, 240),
+          description: String(item.description || "").slice(0, 240),
+          excerpt: String(item.excerpt || "").replace(/<[^>]*>/g, "").slice(0, 500),
+          thumbnail: typeof item.thumbnail?.url === "string" && item.thumbnail.url.startsWith("https://") ? item.thumbnail.url : ""
+        }));
+        return Response.json({ pages }, { headers: { "Cache-Control": "public, max-age=300" } });
+      } catch {
+        return Response.json({ error: "Could not contact Wikipedia. Try again shortly." }, { status: 502 });
+      }
+    }
+
     if (url.pathname === "/api/bug-report") {
       if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
       const origin = request.headers.get("Origin");
