@@ -21,8 +21,8 @@ export default {
       }
       let html = await upstream.text();
       const prefix = "/owned-site";
-      html = html.replace(/(\\b(?:href|src|action|poster)=["'])\\/(?!\\/)/gi, "$1" + prefix + "/");
-      html = html.replace(/<head(\\s[^>]*)?>/i, match => match + '<base href="' + prefix + '/">');
+      html = html.replace(/(\b(?:href|src|action|poster)=["'])\/(?!\/)/gi, "$1" + prefix + "/");
+      html = html.replace(/<head(\s[^>]*)?>/i, match => match + '<base href="' + prefix + '/">');
       headers.delete("Content-Length");
       headers.delete("Content-Security-Policy");
       headers.delete("X-Frame-Options");
