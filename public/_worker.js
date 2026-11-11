@@ -87,11 +87,11 @@ export default {
         if (!upstream.ok) return Response.json({ error: "Google search returned HTTP " + upstream.status + "." }, { status: 502 });
         const html = await upstream.text();
         const results = [];
-        const pattern = /<a[^>]+href="(https?:\/\/[^"]+)"[^>]*>[\s\S]{0,1800}?<h3[^>]*>([\s\S]*?)<\/h3>/gi;
+        const pattern = /<a[^>]+href="([^"]+)"[^>]*>[\s\S]{0,1800}?<h3[^>]*>([\s\S]*?)<\/h3>/gi;
         let match;
         while ((match = pattern.exec(html)) && results.length < 10) {
           let target;
-          try { target = new URL(match[1]); } catch { continue; }
+          try { const rawHref = match[1].replace(/&amp;/g, "&"); const resolved = new URL(rawHref, "https://www.google.com"); const destination = resolved.pathname === "/url" ? resolved.searchParams.get("q") || resolved.searchParams.get("url") : resolved.href; target = new URL(destination); } catch { continue; }
           if (!["http:", "https:"].includes(target.protocol) || target.hostname.endsWith("google.com")) continue;
           const title = match[2].replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&#x27;/gi, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\s+/g, " ").trim();
           if (!title || results.some(item => item.url === target.href)) continue;
