@@ -2,15 +2,6 @@
 
 const ACCESS_KEY = "edustar_access";
 const SUNSET_ACCESS_KEY = "sunsetos_access";
-const GAME_ACCESS_CODE = "stupidlyakward";
-
-// A fresh 10-character code is created for this browser tab's current page session.
-var code = sessionStorage.getItem("sunsetos_dev_code");
-if (!code) {
-  code = Array.from(crypto.getRandomValues(new Uint8Array(5)), value => value.toString(16).padStart(2, "0")).join("");
-  sessionStorage.setItem("sunsetos_dev_code", code);
-}
-var devmode = false;
 
 const GAME_PATHS = {
   game1: "/games/snubby/snubby/mathlesson1.html"
@@ -51,17 +42,35 @@ document.addEventListener("DOMContentLoaded", () => {
   function showSunsetCodeForm() {
     card.innerHTML = '<p class="signin-eyebrow">RESTRICTED ACCESS</p><h1>Solaris.</h1><p class="signin-description">Developer and tester access only.</p><form id="sunset-code-form" class="signin-form"><label for="sunset-code">Access code</label><input id="sunset-code" type="password" placeholder="Access code" autocomplete="off" required><p id="sunset-error" class="signin-error" role="alert" hidden>Invalid or expired developer code. Contact an authorised tester.</p><button class="signin-submit" type="submit">Unlock Solaris <span aria-hidden="true">→</span></button></form><a class="signin-home-link" href="#" id="back-choices">← Back to experiences</a>';
     card.querySelector("#back-choices").addEventListener("click", event => { event.preventDefault(); showChoices(); });
-    card.querySelector("#sunset-code-form").addEventListener("submit", event => {
+    card.querySelector("#sunset-code-form").addEventListener("submit", async event => {
       event.preventDefault();
       const input = card.querySelector("#sunset-code");
       const error = card.querySelector("#sunset-error");
-      if (devmode !== code || input.value.trim().toLowerCase() !== devmode) {
+      const button = card.querySelector(".signin-submit");
+      button.disabled = true;
+      error.hidden = true;
+      try {
+        const response = await fetch("/api/access/verify", {
+          method: "POST", credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "solaris", code: input.value })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok) {
+          error.textContent = result.error || "Could not verify the Solaris code. Try again.";
+          error.hidden = false;
+          if (!result.locked) input.select();
+          else input.disabled = true;
+          return;
+        }
+        sessionStorage.setItem(SUNSET_ACCESS_KEY, "granted");
+        location.assign("/arcade/#launchcode=" + encodeURIComponent(sessionStorage.getItem("sunset_activity_launchcode") || ""));
+      } catch {
+        error.textContent = "Could not contact the access server. Check your connection and try again.";
         error.hidden = false;
-        input.select();
-        return;
+      } finally {
+        if (!input.disabled) button.disabled = false;
       }
-      sessionStorage.setItem(SUNSET_ACCESS_KEY, "granted");
-      location.assign("/arcade/#launchcode=" + encodeURIComponent(sessionStorage.getItem("sunset_activity_launchcode") || ""));
     });
   }
 
@@ -70,14 +79,32 @@ document.addEventListener("DOMContentLoaded", () => {
       event.preventDefault();
       const input = document.getElementById("access-code");
       const error = document.getElementById("access-error");
-      if (input.value !== GAME_ACCESS_CODE) {
-        error.hidden = false;
-        input.select();
-        return;
-      }
+      const button = accessForm.querySelector(".signin-submit");
+      button.disabled = true;
       error.hidden = true;
-      grantAccess();
-      showChoices();
+      try {
+        const response = await fetch("/api/access/verify", {
+          method: "POST", credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "game", code: input.value })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok) {
+          error.textContent = result.error || "Could not verify the class access code. Try again.";
+          error.hidden = false;
+          if (!result.locked) input.select();
+          else input.disabled = true;
+          return;
+        }
+        error.hidden = true;
+        grantAccess();
+        showChoices();
+      } catch {
+        error.textContent = "Could not contact the access server. Check your connection and try again.";
+        error.hidden = false;
+      } finally {
+        if (!input.disabled) button.disabled = false;
+      }
     });
   }
 
