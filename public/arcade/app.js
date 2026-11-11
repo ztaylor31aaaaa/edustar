@@ -51,8 +51,8 @@ function renderWikiTabs(){
  list.innerHTML=appHtml+wikiTabs.map(tab=>'<div class="wiki-tab '+(tab.id===activeWikiTab&&currentView==="wiki-reader"?"active":"")+'"><button type="button" class="wiki-tab-select" data-wiki-tab="'+esc(tab.id)+'" title="'+esc(tab.title)+'">◉ '+esc(tab.title)+'</button><button type="button" class="wiki-tab-close" data-wiki-close="'+esc(tab.id)+'" aria-label="Close '+esc(tab.title)+'">×</button></div>').join("")+webTabs.map(tab=>'<div class="wiki-tab '+(tab.id===activeWebTab&&currentView==="proxy-reader"?"active":"")+'"><button type="button" class="wiki-tab-select" data-web-tab="'+esc(tab.id)+'" title="'+esc(tab.title)+'">◎ '+esc(tab.title)+'</button><button type="button" class="wiki-tab-close" data-web-close="'+esc(tab.id)+'" aria-label="Close '+esc(tab.title)+'">×</button></div>').join("");
 }
 async function openWikiPage(title,key){
- stashActiveAppTab();activeAppTab=null;activeWebTab=null;
  const cleanTitle=String(title||"").trim().slice(0,180),cleanKey=String(key||cleanTitle.replace(/ /g,"_")).trim().slice(0,240);if(!cleanTitle)return;
+ stashActiveAppTab();activeAppTab=null;activeWebTab=null;
  const existing=wikiTabs.find(t=>t.key.toLowerCase()===cleanKey.toLowerCase());
  if(existing){activeWikiTab=existing.id;showWikiTab();return}
  const id=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
@@ -84,9 +84,9 @@ async function runWikiSearch(query,statusSelector="#wiki-search-status",resultsS
  }catch(error){status.textContent=error.message||"Search failed."}
 }
 async function openProxyPage(url,title){
- stashActiveAppTab();activeAppTab=null;
  let parsed;try{parsed=new URL(url)}catch{toast("Enter a valid website address.");return}
  if(!["https:","http:"].includes(parsed.protocol)||parsed.username||parsed.password){toast("Enter a normal HTTP or HTTPS website address.");return}
+ stashActiveAppTab();activeAppTab=null;
  const idExisting=webTabs.find(t=>t.url===parsed.href);
  if(idExisting){activeWebTab=idExisting.id;activeWikiTab=null;showProxyTab();return}
  const id=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
