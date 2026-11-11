@@ -46,6 +46,7 @@ export default {
         imageNames.push(clean(image.name, 100) || ("feedback-image." + allowedTypes[image.type]));
       }
       const message = "Category: " + category + "\nTitle: " + title + "\nPage: " + page + "\n\n" + details + (imageNames.length ? "\n\nScreenshot files: " + imageNames.join(", ") : "");
+      if (!env.EMAILJS_PRIVATE_KEY) return Response.json({ error: "Email delivery is not configured: add the EMAILJS_PRIVATE_KEY secret to the Cloudflare Worker." }, { status: 503 });
       try {
         const sent = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
           method: "POST",
@@ -54,6 +55,7 @@ export default {
             service_id: "service_839w07f",
             template_id: "template_0xp8ivf",
             user_id: "zBLAKZcYgjIffcYbM",
+            accessToken: env.EMAILJS_PRIVATE_KEY,
             template_params: {
               name: "Solaris feedback",
               time: new Date().toLocaleString("en-AU", { timeZone: "Australia/Melbourne" }),
