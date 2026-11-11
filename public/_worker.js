@@ -48,6 +48,28 @@ export default {
       }
     }
 
+    if (url.pathname === "/api/wikipedia/page") {
+      if (request.method !== "GET") return new Response("GET required.", { status: 405 });
+      const title = (url.searchParams.get("title") || "").trim().slice(0, 240);
+      if (!title || !/^[\p{L}\p{N}_()%,' -]+$/u.test(title)) return new Response("Invalid article title.", { status: 400 });
+      try {
+        const upstreamUrl = "https://en.wikipedia.org/w/rest.php/v1/page/" + encodeURIComponent(title) + "/html";
+        const upstream = await fetch(upstreamUrl, {
+          headers: { "Accept": "text/html; charset=utf-8", "User-Agent": "SolarisEducation/1.0 (Wikipedia reader)" },
+          cf: { cacheTtl: 900, cacheEverything: true }
+        });
+        if (!upstream.ok) return new Response("Wikipedia article returned " + upstream.status + ".", {
+          status: upstream.status === 404 ? 404 : 502,
+          headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" }
+        });
+        return new Response(await upstream.text(), {
+          headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=900", "X-Content-Type-Options": "nosniff" }
+        });
+      } catch {
+        return new Response("Could not contact Wikipedia.", { status: 502, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+      }
+    }
+
     if (url.pathname === "/api/bug-report") {
       if (request.method !== "POST") return Response.json({ error: "POST required." }, { status: 405 });
       const origin = request.headers.get("Origin");
