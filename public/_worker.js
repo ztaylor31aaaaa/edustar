@@ -80,7 +80,7 @@ export default {
         .replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">")
         .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
         .replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
-      const clean = value => decode(value.replace(/<[^>]*>/g, " ")).replace(/\\s+/g, " ").trim();
+      const clean = value => decode(value.replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
       try {
         const googleUrl = new URL("https://www.google.com/search");
         googleUrl.searchParams.set("q", query);
@@ -96,7 +96,7 @@ export default {
           if (!upstream.ok) googleError = "Google returned HTTP " + upstream.status;
           else {
             const html = await upstream.text();
-            const pattern = /<a[^>]+href="([^"]+)"[^>]*>[\\s\\S]{0,1800}?<h3[^>]*>([\\s\\S]*?)<\\/h3>/gi;
+            const pattern = /<a[^>]+href="([^"]+)"[^>]*>[\s\S]{0,1800}?<h3[^>]*>([\s\S]*?)<\/h3>/gi;
             let match;
             while ((match = pattern.exec(html)) && results.length < 10) {
               let target;
@@ -109,7 +109,7 @@ export default {
               const title = clean(match[2]);
               if (!title || results.some(item => item.url === target.href)) continue;
               const context = html.slice(match.index, Math.min(html.length, pattern.lastIndex + 1200));
-              const snippet = clean(context.match(/<div[^>]*>([\\s\\S]{0,1000}?)<\\/div>/i)?.[1] || "").slice(0, 320);
+              const snippet = clean(context.match(/<div[^>]*>([\s\S]{0,1000}?)<\/div>/i)?.[1] || "").slice(0, 320);
               results.push({ title: title.slice(0, 180), url: target.href, domain: target.hostname, snippet });
             }
           }
@@ -127,7 +127,7 @@ export default {
         });
         if (!fallback.ok) return Response.json({ error: "Google was unavailable and the backup search returned HTTP " + fallback.status + "." }, { status: 502 });
         const html = await fallback.text();
-        const pattern = /<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]+)"[^>]*>([\\s\\S]*?)<\\/a>/gi;
+        const pattern = /<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
         let match;
         while ((match = pattern.exec(html)) && results.length < 10) {
           let target;
@@ -141,7 +141,7 @@ export default {
           const title = clean(match[2]);
           if (!title || results.some(item => item.url === target.href)) continue;
           const context = html.slice(match.index, Math.min(html.length, pattern.lastIndex + 1800));
-          const snippetMatch = context.match(/class="[^"]*result__snippet[^"]*"[^>]*>([\\s\\S]*?)<\\/[^>]+>/i);
+          const snippetMatch = context.match(/class="[^"]*result__snippet[^"]*"[^>]*>([\s\S]*?)<\/[^>]+>/i);
           results.push({ title: title.slice(0, 180), url: target.href, domain: target.hostname, snippet: clean(snippetMatch?.[1] || "").slice(0, 320) });
         }
         if (!results.length) return Response.json({ error: "Google could not provide results, and the backup search returned no readable results. Try Wikipedia or search again later." }, { status: 502 });
