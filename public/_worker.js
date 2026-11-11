@@ -3,6 +3,34 @@ export default {
     const url = new URL(request.url);
 
 
+    // Same-origin route for the owner's own static site. This keeps the browser's
+    // visible/history URL on Solaris while serving the matching deployed asset.
+    if (url.pathname === "/owned-site" || url.pathname.startsWith("/owned-site/")) {
+      const sitePath = url.pathname.slice("/owned-site".length) || "/";
+      if (sitePath.includes("\\") || sitePath.split("/").some(part => part === "." || part === "..")) {
+        return new Response("Invalid site path.", { status: 400 });
+      }
+      const assetUrl = new URL(request.url);
+      assetUrl.pathname = sitePath;
+      const assetRequest = new Request(assetUrl.toString(), request);
+      const upstream = await env.ASSETS.fetch(assetRequest);
+      const headers = new Headers(upstream.headers);
+      const contentType = headers.get("Content-Type") || "";
+      if (!/text\/html/i.test(contentType) || !upstream.ok) {
+        return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers });
+      }
+      let html = await upstream.text();
+      const prefix = "/owned-site";
+      html = html.replace(/(\\b(?:href|src|action|poster)=["'])\\/(?!\\/)/gi, "$1" + prefix + "/");
+      html = html.replace(/<head(\\s[^>]*)?>/i, match => match + '<base href="' + prefix + '/">');
+      headers.delete("Content-Length");
+      headers.delete("Content-Security-Policy");
+      headers.delete("X-Frame-Options");
+      headers.set("Content-Type", "text/html; charset=utf-8");
+      headers.set("Cache-Control", "no-store");
+      return new Response(html, { status: upstream.status, headers });
+    }
+
     if (url.pathname === "/api/version") {
       if (request.method !== "GET") return Response.json({ error: "GET required." }, { status: 405 });
       try {
