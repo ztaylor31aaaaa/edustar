@@ -6,7 +6,13 @@
     <title>Accelerate My Education</title>
     <link rel="stylesheet" href="/style.css">
     <script src="/home-activities.js" defer></script>
-<link rel="stylesheet" href="/theme.css?v=theme-20261111b"><script src="/theme.js?v=theme-20261111b" defer></script></head>
+<link rel="stylesheet" href="/theme.css?v=theme-20261111b"><script src="/theme.js?v=theme-20261111b" defer></script>
+    <style>
+      .solaris-migration{margin:18px auto 0;width:min(1120px,86%);box-sizing:border-box;padding:18px 22px;border:1px solid #d8c27b;border-radius:12px;background:linear-gradient(110deg,#fff7d8,#fffdf5);color:#302719;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 5px 20px #8a6b1712}
+      .solaris-migration strong{display:block;font-size:16px;margin-bottom:5px}.solaris-migration p{margin:0;color:#665a3e;font-size:13px;line-height:1.5}.solaris-migration a{flex:0 0 auto;padding:11px 16px;border-radius:8px;background:#252525;color:#fff;text-decoration:none;font-size:13px;font-weight:700}.solaris-migration a:hover{background:#4a402d}
+      @media(max-width:620px){.solaris-migration{align-items:flex-start;flex-direction:column}.solaris-migration a{width:100%;box-sizing:border-box;text-align:center}}
+    </style>
+</head>
 <body>
 
     <header class="site-header">
@@ -21,6 +27,11 @@
 
         <a href="/signin/" class="login-button">Sign in</a>
     </header>
+
+    <section class="solaris-migration" aria-label="Solaris migration">
+      <div><strong>This version of Edustar is outdated.</strong><p>Solaris is the new home. Move your saved settings, favourites, recently played games and activity data across, then open the new website.</p></div>
+      <a id="solaris-migrate-link" href="https://solaris.ztaylor31.workers.dev/">Migrate to Solaris ↗</a>
+    </section>
 
     <main>
         <section class="hero">
@@ -98,5 +109,24 @@
         <p>Learning resources for students.</p>
     </footer>
 
+
+<script>
+(()=>{
+  const link=document.getElementById("solaris-migrate-link");
+  if(!link)return;
+  const keys=["sunset_settings","sunset_favs","sunset_recent","sunset_library","sunset_stats","sunset_ai_chats"];
+  link.addEventListener("click",event=>{
+    try{
+      const data={};
+      for(const key of keys){const value=localStorage.getItem(key);if(value!==null)data[key]=value;}
+      const bytes=new TextEncoder().encode(JSON.stringify({version:1,source:"edustar",data}));
+      let binary="";for(const byte of bytes)binary+=String.fromCharCode(byte);
+      const token=btoa(binary).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+      const destination=new URL(link.href);destination.hash="solaris-migrate="+token;
+      event.preventDefault();location.assign(destination.href);
+    }catch(error){console.error("Solaris migration could not be prepared:",error);}
+  });
+})();
+</script>
 </body>
 </html>
